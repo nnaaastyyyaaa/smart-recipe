@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.infrastructure.persistence.database import wait_for_database
+from app.infrastructure.database.database import wait_for_database
 from app.presentation.api.router import api_router
 
 

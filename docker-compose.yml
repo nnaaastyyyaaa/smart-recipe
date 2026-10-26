@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -31,7 +31,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/smart_recipe_db
+      - DATABASE_URL=postgresql+psycopg2://postgres:password@db:5432/smart_recipe_db
     depends_on:
       db:
         condition: service_healthy
