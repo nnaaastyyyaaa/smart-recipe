@@ -16,6 +16,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:backend": "docker compose up --build db backend"
+    "start:backend": "docker compose up --build db backend",
+    "db:migrate": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini upgrade head",
+    "db:revision": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini revision --autogenerate"
   }
 }
