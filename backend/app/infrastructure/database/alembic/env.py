@@ -21,7 +21,8 @@ target_metadata = Base.metadata
 
 database_url = os.getenv("DATABASE_URL")
 if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
+    sync_database_url = database_url.replace("postgresql+asyncpg", "postgresql+psycopg2")
+    config.set_main_option("sqlalchemy.url", sync_database_url)
 
 
 def run_migrations_offline() -> None:

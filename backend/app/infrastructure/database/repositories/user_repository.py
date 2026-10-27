@@ -1,36 +1,36 @@
 from uuid import UUID
-
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.user import User
-from app.domain.interfaces.user_repository import UserRepository
+from app.domain.repositories.user_repository import UserRepository
 from app.infrastructure.database.models.user_model import UserModel
 
 
 class SqlAlchemyUserRepository(UserRepository):
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    def get_by_email(self, email: str) -> User | None:
+    async def get_by_email(self, email: str) -> User | None:
         statement = select(UserModel).where(UserModel.email == email)
-        user_model = self.db.scalar(statement)
+        result = await self.db.execute(statement)
+        user_model = result.scalar_one_or_none()
 
         if user_model is None:
             return None
 
         return self._to_entity(user_model)
 
-    def get_by_id(self, user_id: UUID) -> User | None:
-        user_model = self.db.get(UserModel, user_id)
+    async def get_by_id(self, user_id: UUID) -> User | None:
+        user_model = await self.db.get(UserModel, user_id)
 
         if user_model is None:
             return None
 
         return self._to_entity(user_model)
 
-    def save(self, user: User) -> None:
+    async def save(self, user: User) -> None:
         user_model = UserModel(
             id=user.id,
             email=user.email,
@@ -39,7 +39,7 @@ class SqlAlchemyUserRepository(UserRepository):
         )
 
         self.db.add(user_model)
-        self.db.commit()
+        await self.db.flush()
 
     @staticmethod
     def _to_entity(user_model: UserModel) -> User:

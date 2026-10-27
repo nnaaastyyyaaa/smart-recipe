@@ -5,13 +5,13 @@ from app.domain.entities.user import User
 class UserRepository(ABC):
     
     @abstractmethod
-    def get_by_email(self, email: str) -> User | None:
+    async def get_by_email(self, email: str) -> User | None:
         pass
 
     @abstractmethod
-    def get_by_id(self, user_id: UUID) -> User | None:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         pass
 
     @abstractmethod
-    def save(self, user: User) -> None:
+    async def save(self, user: User) -> User | None:
         pass
