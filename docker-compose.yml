@@ -30,6 +30,9 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/smart_recipe_db
+      - SESSION_TTL_MINUTES=10080
+      - COOKIE_SECURE=false
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
     depends_on:
       db:
         condition: service_healthy

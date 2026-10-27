@@ -1,6 +1,7 @@
 import re
+from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 
 
 class UserRegisterSchema(BaseModel):
@@ -29,3 +30,16 @@ class UserRegisterSchema(BaseModel):
             )
 
         return value
+
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    # Без обмежень довжини/символів: при логіні не підказуємо правила пароля
+    password: str = Field(min_length=1, max_length=128)
+
+
+class UserResponseSchema(BaseModel):
+    id: UUID
+    name: str
+    email: EmailStr
+
+    model_config = ConfigDict(from_attributes=True)
