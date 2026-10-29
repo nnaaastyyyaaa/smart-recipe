@@ -13,5 +13,5 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def save(self, user: User) -> User | None:
+    async def save(self, user: User) -> None:
         pass

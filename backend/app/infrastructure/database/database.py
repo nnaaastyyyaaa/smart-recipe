@@ -28,12 +28,12 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
+    async with AsyncSessionLocal() as db:
         try:
-            yield session
-            await session.commit()
+            yield db
+            await db.commit()
         except Exception:
-            await session.rollback()
+            await db.rollback()
             raise
 
 

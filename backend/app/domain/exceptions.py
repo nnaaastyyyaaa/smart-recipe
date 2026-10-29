@@ -10,3 +10,19 @@ class EmailAlreadyExistsError(DomainError):
 class InvalidCredentialsError(DomainError):
     def __init__(self) -> None:
         super().__init__("Невірний email або пароль.")
+
+class InvalidUserNameError(DomainError):
+    pass
+
+class InvalidUserPasswordHashError(DomainError):
+    pass
+
+class InvalidProductNameError(DomainError):
+    pass
+
+
+class InvalidCategoryNameError(DomainError):
+    pass
+
+class InvalidDietaryRestrictionNameError(DomainError):
+    pass

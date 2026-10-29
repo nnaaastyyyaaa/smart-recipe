@@ -31,14 +31,23 @@ class SqlAlchemyUserRepository(UserRepository):
         return self._to_entity(user_model)
 
     async def save(self, user: User) -> None:
-        user_model = UserModel(
-            id=user.id,
-            email=user.email,
-            password_hash=user.password_hash,
-            name=user.name,
-        )
+        user_model = await self.db.get(UserModel, user.id)
 
-        self.db.add(user_model)
+        if user_model is None:
+            user_model = UserModel(
+                id=user.id,
+                email=user.email,
+                password_hash=user.password_hash,
+                name=user.name,
+            )
+
+            self.db.add(user_model)
+        
+        else:
+            user_model.email = user.email
+            user_model.password_hash = user.password_hash
+            user_model.name = user.name
+        
         await self.db.flush()
 
     @staticmethod
