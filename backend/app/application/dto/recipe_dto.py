@@ -26,11 +26,9 @@ class RecipeSuggestionsRequest(BaseModel):
 class RecipeSuggestionSchema(BaseModel):
     """Короткий варіант рецепта від Gemini."""
 
-    model_config = ConfigDict(extra="forbid")
-
     title: str = Field(min_length=1, max_length=80)
     description: str = Field(min_length=1, max_length=200)
-    cooking_time: int = Field(gt=0)
+    cooking_time: int = Field(ge=1)
 
     used_product_ids: list[int] = Field(
         min_length=2,
@@ -62,8 +60,6 @@ class RecipeSuggestionSchema(BaseModel):
 class RecipeSuggestionsResponse(BaseModel):
     """Список запропонованих рецептів."""
 
-    model_config = ConfigDict(extra="forbid")
-
     recipes: list[RecipeSuggestionSchema] = Field(max_length=8)
 
 
@@ -78,13 +74,11 @@ class GenerateFullRecipeRequest(BaseModel):
 class RecipeGenerationSchema(BaseModel):
     """Повний рецепт від Gemini."""
 
-    model_config = ConfigDict(extra="forbid")
-
     title: str = Field(min_length=1, max_length=80)
     description: str = Field(min_length=1)
     ingredients: str = Field(min_length=1)
     instructions: str = Field(min_length=1)
-    cooking_time: int = Field(gt=0)
+    cooking_time: int = Field(ge=1)
 
     @field_validator(
         "title",
