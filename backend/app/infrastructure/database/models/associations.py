@@ -1,4 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Table
+from uuid import UUID
+
+from sqlalchemy import Column, ForeignKey, Table, Uuid, Integer
 
 from app.infrastructure.database.base import Base
 
