@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.product import Product
@@ -37,11 +37,15 @@ class SQLAlchemyProductRepository(ProductRepository):
         category_id: int | None = None,
         limit: int = 12,
         offset: int = 0,
+        search: str | None = None,
     ) -> list[Product]:
         statement = select(ProductModel)
 
         if category_id is not None:
             statement = statement.where(ProductModel.category_id == category_id)
+
+        if search:
+            statement = statement.where(self._search_condition(search))
 
         statement = (
             statement
@@ -57,6 +61,28 @@ class SQLAlchemyProductRepository(ProductRepository):
             self._to_entity(model)
             for model in models
         ]
+
+    @staticmethod
+    def _search_condition(search: str):
+        # ILIKE для кирилиці залежить від локалі PostgreSQL (в alpine-образі
+        # регістр не враховується), тому порівнюємо кілька варіантів регістру.
+        term = search.strip()
+        variants = {term, term.lower(), term.upper(), term.capitalize()}
+
+        def escape(value: str) -> str:
+            return (
+                value
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+            )
+
+        return or_(
+            *(
+                ProductModel.name.like(f"%{escape(variant)}%", escape="\\")
+                for variant in variants
+            )
+        )
 
     @staticmethod
     def _to_entity(model: ProductModel) -> Product:

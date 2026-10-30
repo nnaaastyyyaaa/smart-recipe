@@ -2,11 +2,12 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import (
     GEMINI_API_KEY,
     GEMINI_MODEL,
     GEMINI_APP_RPM_LIMIT,
+    CORS_ORIGINS
 )
 from app.infrastructure.database.database import wait_for_database
 from app.infrastructure.ai.rate_limiter import InMemoryGeminiRateLimiter
@@ -52,6 +53,14 @@ app = FastAPI(
     title="SmartRecipe API",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(api_router)

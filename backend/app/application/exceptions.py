@@ -16,3 +16,6 @@ class AIProviderUnavailableError(Exception):
 
 class AIProviderInvalidResponseError(Exception):
     pass
+
+class CategoryNotFoundError(Exception):
+    pass

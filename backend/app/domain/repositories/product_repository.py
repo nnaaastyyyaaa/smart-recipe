@@ -16,6 +16,7 @@ class ProductRepository(ABC):
         self, 
         category_id: int | None = None, 
         limit: int = 12, 
-        offset: int = 0
+        offset: int = 0,
+        search: str | None = None,
     ) -> List[Product]:
         pass

@@ -2,13 +2,18 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.auth_service import AuthService
+from app.application.catalog_service import CatalogService
 from app.core.config import SESSION_COOKIE_NAME
 from app.domain.entities.user import User
 from app.domain.repositories.session_repository import SessionRepository
+from app.domain.repositories.category_repository import CategoryRepository
 from app.domain.repositories.user_repository import UserRepository
 from app.infrastructure.database.database import get_db
 from app.infrastructure.database.repositories.session_repository import (
     SqlAlchemySessionRepository,
+)
+from app.infrastructure.database.repositories.category_repository import (
+    SQLAlchemyCategoryRepository
 )
 from app.infrastructure.database.repositories.user_repository import (
     SqlAlchemyUserRepository,
@@ -96,4 +101,19 @@ def get_recipe_service(
         recipes=recipes,
         saved_recipes=saved_recipes,
         recipe_generator=recipe_generator,
+    )
+
+def get_category_repository(
+    db: AsyncSession = Depends(get_db),
+) -> CategoryRepository:
+    return SQLAlchemyCategoryRepository(db)
+
+
+def get_catalog_service(
+    categories: CategoryRepository = Depends(get_category_repository),
+    products: ProductRepository = Depends(get_product_repository),
+) -> CatalogService:
+    return CatalogService(
+        categories=categories,
+        products=products,
     )
