@@ -17,3 +17,22 @@ product_restrictions = Table(
         primary_key=True,
     ),
 )
+
+saved_recipes = Table(
+    "saved_recipes",
+    Base.metadata,
+
+    Column(
+        "user_id",
+        Uuid(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+
+    Column(
+        "recipe_id",
+        Integer,
+        ForeignKey("recipes.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
