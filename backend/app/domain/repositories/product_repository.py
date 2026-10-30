@@ -8,6 +8,10 @@ class ProductRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_by_ids(self, product_ids: list[int]) -> list[Product]:
+        pass
+
+    @abstractmethod
     async def get_all(
         self, 
         category_id: int | None = None, 

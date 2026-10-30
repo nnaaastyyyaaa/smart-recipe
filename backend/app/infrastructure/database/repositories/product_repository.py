@@ -19,6 +19,19 @@ class SQLAlchemyProductRepository(ProductRepository):
 
         return self._to_entity(model)
 
+    async def get_by_ids(self, product_ids: list[int]) -> list[Product]:
+        statement = select(ProductModel).where(
+            ProductModel.id.in_(product_ids)
+        )
+
+        result = await self.db.execute(statement)
+        models = result.scalars().all()
+
+        return [
+            self._to_entity(model)
+            for model in models
+        ]
+
     async def get_all(
         self,
         category_id: int | None = None,

@@ -11,11 +11,14 @@ class InvalidCredentialsError(DomainError):
     def __init__(self) -> None:
         super().__init__("Невірний email або пароль.")
 
+
 class InvalidUserNameError(DomainError):
     pass
 
+
 class InvalidUserPasswordHashError(DomainError):
     pass
+
 
 class InvalidProductNameError(DomainError):
     pass
@@ -24,5 +27,26 @@ class InvalidProductNameError(DomainError):
 class InvalidCategoryNameError(DomainError):
     pass
 
+
 class InvalidDietaryRestrictionNameError(DomainError):
+    pass
+
+
+class InvalidRecipeTitleError(DomainError):
+    pass
+
+
+class InvalidRecipeDescriptionError(DomainError):
+    pass
+
+
+class InvalidRecipeIngredientsError(DomainError):
+    pass
+
+
+class InvalidRecipeInstructionsError(DomainError):
+    pass
+
+
+class InvalidRecipeCookingTimeError(DomainError):
     pass
