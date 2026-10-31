@@ -15,6 +15,7 @@ from app.application.exceptions import (
     AIProviderInvalidResponseError,
 )
 from app.application.interfaces.recipe_generator import RecipeGenerator
+from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.product import Product
 from app.infrastructure.ai.rate_limiter import InMemoryGeminiRateLimiter
 
@@ -46,6 +47,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
         self.client = genai.Client(
             api_key=api_key,
             http_options=types.HttpOptions(
+                timeout=60_000,
                 retry_options=types.HttpRetryOptions(
                     attempts=1,
                 ),
@@ -73,6 +75,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
                     response_mime_type="application/json",
                     response_schema=response_schema,
                     max_output_tokens=max_output_tokens,
+                   
                 ),
             )
 
@@ -106,10 +109,31 @@ class GeminiRecipeGenerator(RecipeGenerator):
 
         raise AIProviderInvalidResponseError()
 
+    @staticmethod
+    def _restrictions_block(
+        restrictions: list[DietaryRestriction],
+    ) -> str:
+        if not restrictions:
+            return ""
+
+        names = ", ".join(restriction.name for restriction in restrictions)
+
+        return f"""
+        ДІЄТИЧНІ ОБМЕЖЕННЯ КОРИСТУВАЧА: {names}.
+
+        Усі страви, інгредієнти та інструкції повинні строго
+        відповідати цим обмеженням. Не додавай жодних додаткових
+        інгредієнтів (включно з сіллю, соусами та спеціями),
+        які порушують ці обмеження.
+        """
+
     async def suggest_recipes(
         self,
-        products: list[Product]
+        products: list[Product],
+        restrictions: list[DietaryRestriction],
     ) -> RecipeSuggestionsResponse:
+
+        restrictions_block = self._restrictions_block(restrictions)
 
         product_list = "\n".join(
             f"ID: {product.id}, назва: {product.name}"
@@ -120,7 +144,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
         Користувач обрав такі продукти:
 
         {product_list}
-
+        {restrictions_block}
         Твоє завдання — запропонувати від 1 до 8
         різних страв, які можна приготувати з цих продуктів.
 
@@ -184,8 +208,11 @@ class GeminiRecipeGenerator(RecipeGenerator):
     async def generate_full_recipe(
         self,
         suggestion: RecipeSuggestionSchema,
-        products: list[Product]
+        products: list[Product],
+        restrictions: list[DietaryRestriction],
     ) -> RecipeGenerationSchema:
+
+        restrictions_block = self._restrictions_block(restrictions)
 
         product_list = "\n".join(
             f"- {product.name}"
@@ -202,7 +229,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
         Обов'язкові продукти:
 
         {product_list}
-
+        {restrictions_block}
         Створи повноцінний рецепт цієї страви.
 
         ОБОВ'ЯЗКОВІ ПРАВИЛА:

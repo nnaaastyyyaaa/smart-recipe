@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -39,3 +41,17 @@ class SqlAlchemySessionRepository(SessionRepository):
         await self.db.execute(
             delete(SessionModel).where(SessionModel.token_hash == token_hash)
         )
+
+    async def delete_all_by_user_id(
+        self,
+        user_id: UUID,
+        except_token_hash: str | None = None,
+    ) -> None:
+        statement = delete(SessionModel).where(SessionModel.user_id == user_id)
+
+        if except_token_hash is not None:
+            statement = statement.where(
+                SessionModel.token_hash != except_token_hash
+            )
+
+        await self.db.execute(statement)

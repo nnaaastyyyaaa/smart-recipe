@@ -6,12 +6,22 @@ from app.application.dto.recipe_dto import (
     RecipeGenerationSchema,
 )
 from app.application.exceptions import (
+    DietaryRestrictionsNotFoundError,
     ProductsNotFoundError,
+    ProductsViolateRestrictionsError,
     NoSuitableRecipesError,
 )
 from app.application.interfaces.recipe_generator import RecipeGenerator
 
+from app.domain.entities.dietary_restriction import DietaryRestriction
+from app.domain.entities.product import Product
 from app.domain.entities.recipe import Recipe
+from app.domain.repositories.dietary_restriction_repository import (
+    DietaryRestrictionRepository,
+)
+from app.domain.repositories.user_dietary_restriction_repository import (
+    UserDietaryRestrictionRepository,
+)
 from app.domain.repositories.product_repository import ProductRepository
 from app.domain.repositories.recipe_repository import RecipeRepository
 from app.domain.repositories.saved_recipe_repository import SavedRecipeRepository
@@ -24,24 +34,90 @@ class RecipeService:
         products: ProductRepository,
         recipes: RecipeRepository,
         saved_recipes: SavedRecipeRepository,
+        restrictions: DietaryRestrictionRepository,
+        user_restrictions: UserDietaryRestrictionRepository,
         recipe_generator: RecipeGenerator,
     ) -> None:
         self.products = products
         self.recipes = recipes
         self.saved_recipes = saved_recipes
+        self.restrictions = restrictions
+        self.user_restrictions = user_restrictions
         self.recipe_generator = recipe_generator
+
+    async def _resolve_restriction_ids(
+        self,
+        user_id: UUID,
+        restriction_ids: list[int] | None,
+    ) -> list[int]:
+        if restriction_ids is not None:
+            return restriction_ids
+
+        profile_restrictions = await self.user_restrictions.get_by_user_id(
+            user_id
+        )
+
+        return [restriction.id for restriction in profile_restrictions]
+
+    async def _get_restrictions(
+        self,
+        restriction_ids: list[int],
+    ) -> list[DietaryRestriction]:
+
+        if not restriction_ids:
+            return []
+
+        restrictions = await self.restrictions.get_by_ids(restriction_ids)
+
+        if len(restrictions) != len(restriction_ids):
+            raise DietaryRestrictionsNotFoundError()
+
+        return restrictions
+
+    async def _ensure_products_allowed(
+        self,
+        products: list[Product],
+        restriction_ids: list[int],
+    ) -> None:
+
+        if not restriction_ids:
+            return
+
+        product_ids = [product.id for product in products]
+
+        allowed = await self.products.get_by_ids(
+            product_ids,
+            exclude_restriction_ids=restriction_ids,
+        )
+
+        if len(allowed) != len(products):
+            raise ProductsViolateRestrictionsError()
 
     async def suggest_recipes(
         self,
+        user_id: UUID,
         product_ids: list[int],
+        restriction_ids: list[int] | None = None,
     ) -> RecipeSuggestionsResponse:
+
+        restriction_ids = await self._resolve_restriction_ids(
+            user_id,
+            restriction_ids,
+        )
 
         products = await self.products.get_by_ids(product_ids)
 
         if len(products) != len(product_ids):
             raise ProductsNotFoundError()
 
-        response = await self.recipe_generator.suggest_recipes(products)
+        restrictions = await self._get_restrictions(restriction_ids)
+
+        await self._ensure_products_allowed(products, restriction_ids)
+
+        response = await self.recipe_generator.suggest_recipes(
+            products,
+            restrictions,
+        )
 
         selected_ids = set(product_ids)
 
@@ -80,8 +156,15 @@ class RecipeService:
 
     async def generate_full_recipe(
         self,
+        user_id: UUID,
         suggestion: RecipeSuggestionSchema,
+        restriction_ids: list[int] | None = None,
     ) -> RecipeGenerationSchema:
+
+        restriction_ids = await self._resolve_restriction_ids(
+            user_id,
+            restriction_ids,
+        )
 
         products = await self.products.get_by_ids(
             suggestion.used_product_ids
@@ -90,9 +173,14 @@ class RecipeService:
         if len(products) != len(suggestion.used_product_ids):
             raise ProductsNotFoundError()
 
+        restrictions = await self._get_restrictions(restriction_ids)
+
+        await self._ensure_products_allowed(products, restriction_ids)
+
         return await self.recipe_generator.generate_full_recipe(
             suggestion=suggestion,
             products=products,
+            restrictions=restrictions,
         )
 
     async def save_recipe(

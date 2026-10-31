@@ -9,7 +9,9 @@ from app.application.dto.recipe_dto import (
 )
 from app.application.recipe_service import RecipeService
 from app.application.exceptions import (
+    DietaryRestrictionsNotFoundError,
     ProductsNotFoundError,
+    ProductsViolateRestrictionsError,
     NoSuitableRecipesError,
     AIProviderRateLimitError,
     AIProviderUnavailableError,
@@ -86,12 +88,28 @@ async def suggest_recipes(
     current_user: User = Depends(get_current_user),
 ) -> RecipeSuggestionsResponse:
     try:
-        return await service.suggest_recipes(data.product_ids)
+        return await service.suggest_recipes(
+            current_user.id,
+            data.product_ids,
+            data.restriction_ids,
+        )
 
     except ProductsNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Один або декілька обраних продуктів не знайдені.",
+        )
+
+    except DietaryRestrictionsNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Одне або декілька дієтичних обмежень не знайдені.",
+        )
+
+    except ProductsViolateRestrictionsError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Серед обраних продуктів є такі, що не підходять під обрані дієтичні обмеження.",
         )
 
     except NoSuitableRecipesError:
@@ -119,12 +137,28 @@ async def generate_full_recipe(
     current_user: User = Depends(get_current_user),
 ) -> RecipeGenerationSchema:
     try:
-        return await service.generate_full_recipe(data.suggestion)
+        return await service.generate_full_recipe(
+            current_user.id,
+            data.suggestion,
+            data.restriction_ids,
+        )
 
     except ProductsNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Один або декілька продуктів не знайдені.",
+        )
+
+    except DietaryRestrictionsNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Одне або декілька дієтичних обмежень не знайдені.",
+        )
+
+    except ProductsViolateRestrictionsError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Серед обраних продуктів є такі, що не підходять під обрані дієтичні обмеження.",
         )
 
     except (

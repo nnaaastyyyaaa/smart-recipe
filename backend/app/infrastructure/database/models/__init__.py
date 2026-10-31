@@ -6,5 +6,6 @@ from app.infrastructure.database.models.product_model import ProductModel
 from app.infrastructure.database.models.recipe_model import RecipeModel
 from app.infrastructure.database.models.associations import (
     product_restrictions,
-    saved_recipes
+    saved_recipes,
+    user_dietary_restrictions,
 )

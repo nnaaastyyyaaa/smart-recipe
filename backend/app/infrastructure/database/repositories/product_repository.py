@@ -1,8 +1,15 @@
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.product import Product
 from app.domain.repositories.product_repository import ProductRepository
+from app.infrastructure.database.models.associations import (
+    product_restrictions,
+)
+from app.infrastructure.database.models.dietary_restriction_model import (
+    DietaryRestrictionModel,
+)
 from app.infrastructure.database.models.product_model import ProductModel
 
 
@@ -19,10 +26,19 @@ class SQLAlchemyProductRepository(ProductRepository):
 
         return self._to_entity(model)
 
-    async def get_by_ids(self, product_ids: list[int]) -> list[Product]:
+    async def get_by_ids(
+        self,
+        product_ids: list[int],
+        exclude_restriction_ids: list[int] | None = None,
+    ) -> list[Product]:
         statement = select(ProductModel).where(
             ProductModel.id.in_(product_ids)
         )
+
+        if exclude_restriction_ids:
+            statement = statement.where(
+                self._allowed_condition(exclude_restriction_ids)
+            )
 
         result = await self.db.execute(statement)
         models = result.scalars().all()
@@ -38,6 +54,7 @@ class SQLAlchemyProductRepository(ProductRepository):
         limit: int = 12,
         offset: int = 0,
         search: str | None = None,
+        exclude_restriction_ids: list[int] | None = None,
     ) -> list[Product]:
         statement = select(ProductModel)
 
@@ -46,6 +63,11 @@ class SQLAlchemyProductRepository(ProductRepository):
 
         if search:
             statement = statement.where(self._search_condition(search))
+
+        if exclude_restriction_ids:
+            statement = statement.where(
+                self._allowed_condition(exclude_restriction_ids)
+            )
 
         statement = (
             statement
@@ -62,10 +84,37 @@ class SQLAlchemyProductRepository(ProductRepository):
             for model in models
         ]
 
+    async def get_restrictions(
+        self,
+        product_id: int,
+    ) -> list[DietaryRestriction]:
+        statement = (
+            select(DietaryRestrictionModel)
+            .join(
+                product_restrictions,
+                product_restrictions.c.restriction_id
+                == DietaryRestrictionModel.id,
+            )
+            .where(product_restrictions.c.product_id == product_id)
+            .order_by(DietaryRestrictionModel.name)
+        )
+
+        result = await self.db.execute(statement)
+        models = result.scalars().all()
+
+        return [
+            DietaryRestriction(id=model.id, name=model.name)
+            for model in models
+        ]
+
+    @staticmethod
+    def _allowed_condition(restriction_ids: list[int]):
+        return ~ProductModel.restrictions.any(
+            DietaryRestrictionModel.id.in_(restriction_ids)
+        )
+
     @staticmethod
     def _search_condition(search: str):
-        # ILIKE для кирилиці залежить від локалі PostgreSQL (в alpine-образі
-        # регістр не враховується), тому порівнюємо кілька варіантів регістру.
         term = search.strip()
         variants = {term, term.lower(), term.upper(), term.capitalize()}
 

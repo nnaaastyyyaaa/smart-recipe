@@ -32,3 +32,7 @@ class SavedRecipeRepository(ABC):
         recipe_id: int,
     ) -> bool:
         pass
+
+    @abstractmethod
+    async def delete_all_by_user_id(self, user_id: UUID) -> None:
+        pass

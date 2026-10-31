@@ -1,6 +1,19 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+def validate_restriction_ids(value: list[int] | None) -> list[int] | None:
+    if value is None:
+        return value
+
+    if any(restriction_id <= 0 for restriction_id in value):
+        raise ValueError("ID обмежень повинні бути додатними.")
+
+    if len(value) != len(set(value)):
+        raise ValueError("ID обмежень не повинні повторюватися.")
+
+    return value
+
+
 class RecipeSuggestionsRequest(BaseModel):
     """Продукти, для яких потрібно підібрати рецепти."""
 
@@ -10,6 +23,16 @@ class RecipeSuggestionsRequest(BaseModel):
         min_length=2,
         max_length=30,
     )
+
+    restriction_ids: list[int] | None = Field(
+        default=None,
+        max_length=20,
+    )
+
+    @field_validator("restriction_ids")
+    @classmethod
+    def validate_restrictions(cls, value: list[int] | None) -> list[int] | None:
+        return validate_restriction_ids(value)
 
     @field_validator("product_ids")
     @classmethod
@@ -69,6 +92,16 @@ class GenerateFullRecipeRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     suggestion: RecipeSuggestionSchema
+
+    restriction_ids: list[int] | None = Field(
+        default=None,
+        max_length=20,
+    )
+
+    @field_validator("restriction_ids")
+    @classmethod
+    def validate_restrictions(cls, value: list[int] | None) -> list[int] | None:
+        return validate_restriction_ids(value)
 
 
 class RecipeGenerationSchema(BaseModel):

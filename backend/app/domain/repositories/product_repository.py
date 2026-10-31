@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.product import Product
 
 class ProductRepository(ABC):
@@ -8,7 +9,11 @@ class ProductRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_by_ids(self, product_ids: list[int]) -> list[Product]:
+    async def get_by_ids(
+        self,
+        product_ids: list[int],
+        exclude_restriction_ids: list[int] | None = None,
+    ) -> list[Product]:
         pass
 
     @abstractmethod
@@ -18,5 +23,13 @@ class ProductRepository(ABC):
         limit: int = 12, 
         offset: int = 0,
         search: str | None = None,
+        exclude_restriction_ids: list[int] | None = None,
     ) -> List[Product]:
+        pass
+
+    @abstractmethod
+    async def get_restrictions(
+        self,
+        product_id: int,
+    ) -> list[DietaryRestriction]:
         pass

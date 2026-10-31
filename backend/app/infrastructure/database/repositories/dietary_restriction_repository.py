@@ -41,6 +41,24 @@ class SQLAlchemyDietaryRestrictionRepository(DietaryRestrictionRepository):
 
         return self._to_entity(model)
 
+    async def get_by_ids(
+        self,
+        restriction_ids: list[int],
+    ) -> list[DietaryRestriction]:
+        statement = (
+            select(DietaryRestrictionModel)
+            .where(DietaryRestrictionModel.id.in_(restriction_ids))
+            .order_by(DietaryRestrictionModel.name)
+        )
+
+        result = await self.db.execute(statement)
+        models = result.scalars().all()
+
+        return [
+            self._to_entity(model)
+            for model in models
+        ]
+
     async def get_all(self) -> list[DietaryRestriction]:
         statement = select(DietaryRestrictionModel).order_by(
             DietaryRestrictionModel.name

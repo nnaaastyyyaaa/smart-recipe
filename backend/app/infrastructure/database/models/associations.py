@@ -38,3 +38,22 @@ saved_recipes = Table(
         primary_key=True,
     ),
 )
+
+user_dietary_restrictions = Table(
+    "user_dietary_restrictions",
+    Base.metadata,
+
+    Column(
+        "user_id",
+        Uuid(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+
+    Column(
+        "restriction_id",
+        Integer,
+        ForeignKey("dietary_restrictions.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)

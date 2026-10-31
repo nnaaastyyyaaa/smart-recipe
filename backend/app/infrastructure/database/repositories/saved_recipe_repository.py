@@ -111,6 +111,29 @@ class SQLAlchemySavedRecipeRepository(SavedRecipeRepository):
 
         return True
 
+    async def delete_all_by_user_id(self, user_id: UUID) -> None:
+        result = await self.db.execute(
+            delete(saved_recipes)
+            .where(saved_recipes.c.user_id == user_id)
+            .returning(saved_recipes.c.recipe_id)
+        )
+
+        recipe_ids = [row[0] for row in result.all()]
+
+        if recipe_ids:
+            still_used = select(saved_recipes.c.recipe_id).where(
+                saved_recipes.c.recipe_id.in_(recipe_ids)
+            )
+
+            await self.db.execute(
+                delete(RecipeModel).where(
+                    RecipeModel.id.in_(recipe_ids),
+                    RecipeModel.id.not_in(still_used),
+                )
+            )
+
+        await self.db.flush()
+
     @staticmethod
     def _to_entity(model: RecipeModel) -> Recipe:
         return Recipe(

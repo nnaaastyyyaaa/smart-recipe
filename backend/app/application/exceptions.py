@@ -17,5 +17,18 @@ class AIProviderUnavailableError(Exception):
 class AIProviderInvalidResponseError(Exception):
     pass
 
+
 class CategoryNotFoundError(Exception):
+    pass
+
+
+class DietaryRestrictionsNotFoundError(Exception):
+    pass
+
+
+class ProductsViolateRestrictionsError(Exception):
+    pass
+
+
+class ProductNotFoundError(Exception):
     pass

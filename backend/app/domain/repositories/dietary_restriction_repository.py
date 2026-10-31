@@ -20,5 +20,12 @@ class DietaryRestrictionRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_by_ids(
+        self,
+        restriction_ids: list[int],
+    ) -> list[DietaryRestriction]:
+        pass
+
+    @abstractmethod
     async def get_all(self) -> list[DietaryRestriction]:
         pass

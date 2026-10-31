@@ -5,6 +5,7 @@ from app.application.dto.recipe_dto import (
     RecipeSuggestionsResponse,
     RecipeGenerationSchema,
 )
+from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.product import Product
 
 
@@ -13,7 +14,8 @@ class RecipeGenerator(ABC):
     @abstractmethod
     async def suggest_recipes(
         self,
-        products: list[Product]
+        products: list[Product],
+        restrictions: list[DietaryRestriction],
     ) -> RecipeSuggestionsResponse:
         pass
 
@@ -21,7 +23,8 @@ class RecipeGenerator(ABC):
     async def generate_full_recipe(
         self,
         suggestion: RecipeSuggestionSchema,
-        products: list[Product]
+        products: list[Product],
+        restrictions: list[DietaryRestriction],
     ) -> RecipeGenerationSchema:
         pass
 
