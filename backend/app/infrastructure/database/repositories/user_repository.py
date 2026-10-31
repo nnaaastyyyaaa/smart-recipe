@@ -1,5 +1,5 @@
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.user import User
@@ -49,6 +49,11 @@ class SqlAlchemyUserRepository(UserRepository):
             user_model.name = user.name
         
         await self.db.flush()
+
+    async def delete(self, user_id: UUID) -> None:
+        await self.db.execute(
+            delete(UserModel).where(UserModel.id == user_id)
+        )
 
     @staticmethod
     def _to_entity(user_model: UserModel) -> User:

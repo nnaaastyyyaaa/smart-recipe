@@ -24,4 +24,10 @@ class User:
             raise InvalidUserPasswordHashError("Хеш пароля не може бути порожнім.")
 
         self.password_hash = new_password_hash
-    
+
+    def rename(self, name: str) -> None:
+        self.name = name.strip()
+        self.validate()
+
+    def change_email(self, email: str) -> None:
+        self.email = email

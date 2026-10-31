@@ -12,6 +12,11 @@ class InvalidCredentialsError(DomainError):
         super().__init__("Невірний email або пароль.")
 
 
+class InvalidCurrentPasswordError(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Невірний поточний пароль.")
+
+
 class InvalidUserNameError(DomainError):
     pass
 

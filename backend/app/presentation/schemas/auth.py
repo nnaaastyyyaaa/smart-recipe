@@ -33,7 +33,6 @@ class UserRegisterSchema(BaseModel):
 
 class UserLoginSchema(BaseModel):
     email: EmailStr
-    # Без обмежень довжини/символів: при логіні не підказуємо правила пароля
     password: str = Field(min_length=1, max_length=128)
 
 
