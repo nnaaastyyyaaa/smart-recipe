@@ -32,3 +32,28 @@ class ProductsViolateRestrictionsError(Exception):
 
 class ProductNotFoundError(Exception):
     pass
+
+
+
+class GenerationNotFoundError(Exception):
+    """Сесії немає, її термін дії минув або вона належить іншому користувачу."""
+
+
+class GenerationRestrictionsNotSelectedError(Exception):
+    """Крок вибору дієтичних обмежень ще не пройдено."""
+
+
+class GenerationSuggestionsNotReadyError(Exception):
+    """Варіанти рецептів ще не згенеровані."""
+
+
+class GenerationStateChangedError(Exception):
+    """Під час запиту до ШІ сесія була змінена (наприклад, обмеження)."""
+
+
+class SuggestionNotFoundError(Exception):
+    pass
+
+
+class SuggestionsPageNotFoundError(Exception):
+    pass

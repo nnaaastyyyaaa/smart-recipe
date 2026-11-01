@@ -5,7 +5,6 @@ from app.application.dto.catalog_dto import (
     CategoryResponseSchema,
     DietaryRestrictionResponseSchema,
     ProductResponseSchema,
-    RestrictionIdsUpdateSchema,
 )
 from app.application.exceptions import (
     CategoryNotFoundError,

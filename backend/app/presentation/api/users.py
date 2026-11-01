@@ -1,10 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
-from app.application.dto.catalog_dto import (
-    DietaryRestrictionResponseSchema,
-    RestrictionIdsUpdateSchema,
-)
-from app.application.exceptions import DietaryRestrictionsNotFoundError
 from app.application.user_service import UserService
 from app.core.config import SESSION_COOKIE_NAME, SESSION_COOKIE_SECURE
 from app.domain.entities.user import User
@@ -90,36 +85,3 @@ async def delete_me(
         secure=SESSION_COOKIE_SECURE,
         samesite="lax",
     )
-
-
-@router.get(
-    "/me/dietary-restrictions",
-    response_model=list[DietaryRestrictionResponseSchema],
-)
-async def get_my_dietary_restrictions(
-    service: UserService = Depends(get_user_service),
-    current_user: User = Depends(get_current_user),
-):
-    return await service.get_restrictions(current_user.id)
-
-
-@router.patch(
-    "/me/dietary-restrictions",
-    response_model=list[DietaryRestrictionResponseSchema],
-)
-async def set_my_dietary_restrictions(
-    data: RestrictionIdsUpdateSchema,
-    service: UserService = Depends(get_user_service),
-    current_user: User = Depends(get_current_user),
-):
-    try:
-        return await service.set_restrictions(
-            current_user.id,
-            data.restriction_ids,
-        )
-
-    except DietaryRestrictionsNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Одне або декілька дієтичних обмежень не знайдені.",
-        )

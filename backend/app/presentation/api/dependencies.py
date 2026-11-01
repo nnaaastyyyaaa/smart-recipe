@@ -15,6 +15,7 @@ from app.infrastructure.database.repositories.user_repository import (
 )
 
 from app.application.catalog_service import CatalogService
+from app.application.generation_service import GenerationService
 from app.application.user_service import UserService
 from app.application.recipe_service import RecipeService
 from app.application.interfaces.recipe_generator import RecipeGenerator
@@ -23,15 +24,12 @@ from app.domain.repositories.category_repository import CategoryRepository
 from app.domain.repositories.dietary_restriction_repository import (
     DietaryRestrictionRepository,
 )
-from app.domain.repositories.user_dietary_restriction_repository import (
-    UserDietaryRestrictionRepository,
+from app.domain.repositories.generation_session_repository import (
+    GenerationSessionRepository,
 )
 from app.domain.repositories.product_repository import ProductRepository
 from app.domain.repositories.recipe_repository import RecipeRepository
 from app.domain.repositories.saved_recipe_repository import SavedRecipeRepository
-from app.infrastructure.database.repositories.user_dietary_restriction_repository import (
-    SQLAlchemyUserDietaryRestrictionRepository,
-)
 from app.infrastructure.database.repositories.dietary_restriction_repository import (
     SQLAlchemyDietaryRestrictionRepository,
 )
@@ -84,6 +82,12 @@ def get_recipe_generator(request: Request) -> RecipeGenerator:
     return request.app.state.recipe_generator
 
 
+def get_generation_session_repository(
+    request: Request,
+) -> GenerationSessionRepository:
+    return request.app.state.generation_sessions
+
+
 def get_product_repository(
     db: AsyncSession = Depends(get_db),
 ) -> ProductRepository:
@@ -102,44 +106,47 @@ def get_saved_recipe_repository(
     return SQLAlchemySavedRecipeRepository(db)
 
 
-def get_user_dietary_restriction_repository(
-    db: AsyncSession = Depends(get_db),
-) -> UserDietaryRestrictionRepository:
-    return SQLAlchemyUserDietaryRestrictionRepository(db)
-
-
 def get_dietary_restriction_repository(
     db: AsyncSession = Depends(get_db),
 ) -> DietaryRestrictionRepository:
     return SQLAlchemyDietaryRestrictionRepository(db)
 
 
-def get_recipe_service(
-    products: ProductRepository = Depends(get_product_repository),
-    recipes: RecipeRepository = Depends(get_recipe_repository),
-    saved_recipes: SavedRecipeRepository = Depends(get_saved_recipe_repository),
-    restrictions: DietaryRestrictionRepository = Depends(
-        get_dietary_restriction_repository
-    ),
-    user_restrictions: UserDietaryRestrictionRepository = Depends(
-        get_user_dietary_restriction_repository
-    ),
-    recipe_generator: RecipeGenerator = Depends(get_recipe_generator),
-) -> RecipeService:
-    return RecipeService(
-        products=products,
-        recipes=recipes,
-        saved_recipes=saved_recipes,
-        restrictions=restrictions,
-        user_restrictions=user_restrictions,
-        recipe_generator=recipe_generator,
-    )
-
-
 def get_category_repository(
     db: AsyncSession = Depends(get_db),
 ) -> CategoryRepository:
     return SQLAlchemyCategoryRepository(db)
+
+
+def get_recipe_service(
+    recipes: RecipeRepository = Depends(get_recipe_repository),
+    saved_recipes: SavedRecipeRepository = Depends(get_saved_recipe_repository),
+) -> RecipeService:
+    return RecipeService(
+        recipes=recipes,
+        saved_recipes=saved_recipes,
+    )
+
+
+def get_generation_service(
+    sessions: GenerationSessionRepository = Depends(
+        get_generation_session_repository
+    ),
+    categories: CategoryRepository = Depends(get_category_repository),
+    products: ProductRepository = Depends(get_product_repository),
+    restrictions: DietaryRestrictionRepository = Depends(
+        get_dietary_restriction_repository
+    ),
+    recipe_generator: RecipeGenerator = Depends(get_recipe_generator),
+) -> GenerationService:
+    return GenerationService(
+        sessions=sessions,
+        categories=categories,
+        products=products,
+        restrictions=restrictions,
+        recipe_generator=recipe_generator,
+    )
+
 
 def get_catalog_service(
     categories: CategoryRepository = Depends(get_category_repository),
@@ -159,17 +166,9 @@ def get_user_service(
     users: UserRepository = Depends(get_user_repository),
     sessions: SessionRepository = Depends(get_session_repository),
     saved_recipes: SavedRecipeRepository = Depends(get_saved_recipe_repository),
-    user_restrictions: UserDietaryRestrictionRepository = Depends(
-        get_user_dietary_restriction_repository
-    ),
-    restrictions: DietaryRestrictionRepository = Depends(
-        get_dietary_restriction_repository
-    ),
 ) -> UserService:
     return UserService(
         users=users,
         sessions=sessions,
         saved_recipes=saved_recipes,
-        user_restrictions=user_restrictions,
-        restrictions=restrictions,
     )

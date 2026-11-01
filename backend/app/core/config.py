@@ -26,3 +26,14 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL")
 GEMINI_APP_RPM_LIMIT = int(
     os.getenv("GEMINI_APP_RPM_LIMIT", "5")
 )
+
+# Скільки хвилин "живе" сесія генерації (оновлюється при кожній дії користувача).
+GENERATION_SESSION_TTL_MINUTES = int(
+    os.getenv("GENERATION_SESSION_TTL_MINUTES", "120")
+)
+
+# Максимум варіантів рецептів, які просимо у Gemini за один запит.
+MAX_RECIPE_SUGGESTIONS = 16
+
+# Скільки варіантів рецептів повертається на одній сторінці.
+SUGGESTIONS_PAGE_SIZE = 8

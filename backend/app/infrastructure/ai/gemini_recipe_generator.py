@@ -15,6 +15,7 @@ from app.application.exceptions import (
     AIProviderInvalidResponseError,
 )
 from app.application.interfaces.recipe_generator import RecipeGenerator
+from app.core.config import MAX_RECIPE_SUGGESTIONS
 from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.product import Product
 from app.infrastructure.ai.rate_limiter import InMemoryGeminiRateLimiter
@@ -75,7 +76,6 @@ class GeminiRecipeGenerator(RecipeGenerator):
                     response_mime_type="application/json",
                     response_schema=response_schema,
                     max_output_tokens=max_output_tokens,
-                   
                 ),
             )
 
@@ -119,7 +119,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
         names = ", ".join(restriction.name for restriction in restrictions)
 
         return f"""
-        ДІЄТИЧНІ ОБМЕЖЕННЯ КОРИСТУВАЧА: {names}.
+        ОБРАНІ ДІЄТИЧНІ ОБМЕЖЕННЯ ДЛЯ ЦЬОГО РЕЦЕПТА: {names}.
 
         Усі страви, інгредієнти та інструкції повинні строго
         відповідати цим обмеженням. Не додавай жодних додаткових
@@ -145,7 +145,7 @@ class GeminiRecipeGenerator(RecipeGenerator):
 
         {product_list}
         {restrictions_block}
-        Твоє завдання — запропонувати від 1 до 8
+        Твоє завдання — запропонувати від 1 до {MAX_RECIPE_SUGGESTIONS}
         різних страв, які можна приготувати з цих продуктів.
 
         ОБОВ'ЯЗКОВІ ПРАВИЛА:
@@ -167,6 +167,8 @@ class GeminiRecipeGenerator(RecipeGenerator):
            порожній список recipes.
 
         6. Не вигадуй рецепти лише для того, щоб заповнити список.
+           Якщо доречних страв менше за {MAX_RECIPE_SUGGESTIONS},
+           поверни стільки, скільки є.
 
         7. Далі можна пропонувати рецепти, які використовують
            меншу кількість обраних продуктів, але не менше двох.
@@ -177,7 +179,8 @@ class GeminiRecipeGenerator(RecipeGenerator):
         9. Не використовуй продукти, яких немає у списку,
            як основні інгредієнти. Дозволені звичайні
            додаткові продукти на кшталт солі, перцю,
-           води та олії.
+           води та олії (якщо вони не суперечать
+           обраним дієтичним обмеженням).
 
         10. used_product_ids повинен містити тільки ID
            тих обраних продуктів, які справді входять
@@ -191,13 +194,13 @@ class GeminiRecipeGenerator(RecipeGenerator):
 
         13. Усі текстові поля повинні бути українською мовою.
 
-        Поверни не більше 8 різних рецептів.
+        Поверни не більше {MAX_RECIPE_SUGGESTIONS} різних рецептів.
         """
 
         response = await self._generate_content(
             prompt=prompt,
             response_schema=RecipeSuggestionsResponse,
-            max_output_tokens=3000,
+            max_output_tokens=8000,
         )
 
         return self._parse_response(
@@ -239,7 +242,8 @@ class GeminiRecipeGenerator(RecipeGenerator):
         3. Вкажи точні кількості інгредієнтів
            та одиниці вимірювання.
         4. Можеш додавати базові додаткові інгредієнти,
-           наприклад сіль, перець, олію та спеції.
+           наприклад сіль, перець, олію та спеції
+           (якщо вони не суперечать дієтичним обмеженням).
         5. Створи детальну послідовну інструкцію
            приготування.
         6. Час приготування вкажи цілим числом хвилин.

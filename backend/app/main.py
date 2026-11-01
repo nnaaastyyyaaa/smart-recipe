@@ -13,6 +13,9 @@ from app.core.config import (
 from app.infrastructure.database.database import wait_for_database
 from app.infrastructure.ai.rate_limiter import InMemoryGeminiRateLimiter
 from app.infrastructure.ai.gemini_recipe_generator import GeminiRecipeGenerator
+from app.infrastructure.generation.in_memory_generation_session_repository import (
+    InMemoryGenerationSessionRepository,
+)
 from app.presentation.api.router import api_router
 
 
@@ -43,6 +46,8 @@ async def lifespan(app: FastAPI):
     )
 
     app.state.recipe_generator = recipe_generator
+
+    app.state.generation_sessions = InMemoryGenerationSessionRepository()
 
     try:
         yield
