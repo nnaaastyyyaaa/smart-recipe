@@ -7,3 +7,4 @@ email-validator
 alembic
 bcrypt
 google-genai
+PyJWT

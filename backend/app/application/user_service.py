@@ -1,7 +1,7 @@
 from app.application.auth_service import normalize_email
 from app.core.security import (
     hash_password,
-    hash_session_token,
+    session_hash_from_token,
     verify_password,
 )
 from app.domain.entities.user import User
@@ -67,7 +67,7 @@ class UserService:
         await self.users.save(user)
 
         except_token_hash = (
-            hash_session_token(current_session_token)
+            session_hash_from_token(current_session_token)
             if current_session_token
             else None
         )

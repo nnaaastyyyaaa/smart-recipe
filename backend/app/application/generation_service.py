@@ -30,6 +30,7 @@ from app.core.config import (
     MAX_RECIPE_SUGGESTIONS,
     SUGGESTIONS_PAGE_SIZE,
 )
+from app.domain.entities.category import Category
 from app.domain.entities.dietary_restriction import DietaryRestriction
 from app.domain.entities.generation_session import (
     GenerationSession,
@@ -52,7 +53,8 @@ class GenerationService:
 
     1. start                -> нова сесія ("Почати генерацію")
     2. set_restrictions     -> дієтичні обмеження (або "немає")
-    3. get_available_products -> лише продукти, що підходять під обмеження
+    3. get_available_categories / get_available_products
+                            -> лише категорії й продукти, що підходять під обмеження
     4. suggest_recipes      -> до 16 варіантів, повертається перша сторінка
     5. get_suggestions_page -> інші сторінки варіантів (по 8)
     6. generate_full_recipe -> детальний рецепт для обраного варіанта
@@ -109,6 +111,24 @@ class GenerationService:
         await self.sessions.save(session)
 
         return await self._to_state(session, restrictions)
+
+    async def get_available_categories(
+        self,
+        user_id: UUID,
+        generation_id: UUID,
+    ) -> list[Category]:
+        session = await self._get_session(user_id, generation_id)
+        self._ensure_restrictions_selected(session)
+
+        allowed_ids = set(
+            await self.products.get_category_ids(session.restriction_ids)
+        )
+
+        return [
+            category
+            for category in await self.categories.get_all()
+            if category.id in allowed_ids
+        ]
 
     async def get_available_products(
         self,

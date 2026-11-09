@@ -32,6 +32,8 @@ class SQLAlchemySavedRecipeRepository(SavedRecipeRepository):
     async def get_all_by_user_id(
         self,
         user_id: UUID,
+        limit: int | None = None,
+        offset: int = 0,
     ) -> list[Recipe]:
         statement = (
             select(RecipeModel)
@@ -40,8 +42,13 @@ class SQLAlchemySavedRecipeRepository(SavedRecipeRepository):
                 saved_recipes.c.recipe_id == RecipeModel.id,
             )
             .where(saved_recipes.c.user_id == user_id)
-            .order_by(RecipeModel.title)
+            .order_by(RecipeModel.title, RecipeModel.id)
         )
+
+        if limit is not None:
+            statement = statement.limit(limit).offset(offset)
+        elif offset:
+            statement = statement.offset(offset)
 
         result = await self.db.execute(statement)
         models = result.scalars().all()
@@ -50,6 +57,13 @@ class SQLAlchemySavedRecipeRepository(SavedRecipeRepository):
             self._to_entity(model)
             for model in models
         ]
+
+    async def count_by_user_id(self, user_id: UUID) -> int:
+        return await self.db.scalar(
+            select(func.count())
+            .select_from(saved_recipes)
+            .where(saved_recipes.c.user_id == user_id)
+        ) or 0
 
     async def get_by_id(
         self,

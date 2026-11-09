@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 from app.application.catalog_service import CatalogService
 from app.application.dto.catalog_dto import (
@@ -11,12 +13,15 @@ from app.application.exceptions import (
     DietaryRestrictionsNotFoundError,
     ProductNotFoundError,
 )
+from app.core.config import MAX_DB_ID
 from app.domain.entities.user import User
 from app.presentation.api.dependencies import (
     get_catalog_service,
     get_current_user,
 )
 
+
+DbId = Annotated[int, Path(gt=0, le=MAX_DB_ID)]
 
 router = APIRouter(tags=["catalog"])
 
@@ -37,7 +42,7 @@ async def get_categories(
     response_model=CategoryResponseSchema,
 )
 async def get_category(
-    category_id: int,
+    category_id: DbId,
     service: CatalogService = Depends(get_catalog_service),
     current_user: User = Depends(get_current_user),
 ):
@@ -68,11 +73,11 @@ async def get_dietary_restrictions(
     response_model=list[ProductResponseSchema],
 )
 async def get_products(
-    category_id: int | None = Query(default=None, gt=0),
+    category_id: int | None = Query(default=None, gt=0, le=MAX_DB_ID),
     search: str | None = Query(default=None, min_length=1, max_length=60),
     limit: int = Query(default=50, ge=1, le=200),
-    offset: int = Query(default=0, ge=0),
-    restriction_ids: list[int] | None = Query(default=None),
+    offset: int = Query(default=0, ge=0, le=MAX_DB_ID),
+    restriction_ids: list[Annotated[int, Query(gt=0, le=MAX_DB_ID)]] | None = Query(default=None),
     service: CatalogService = Depends(get_catalog_service),
     current_user: User = Depends(get_current_user),
 ):
@@ -103,7 +108,7 @@ async def get_products(
     response_model=ProductResponseSchema,
 )
 async def get_product(
-    product_id: int,
+    product_id: DbId,
     service: CatalogService = Depends(get_catalog_service),
     current_user: User = Depends(get_current_user),
 ):
@@ -123,7 +128,7 @@ async def get_product(
     response_model=DietaryRestrictionResponseSchema,
 )
 async def get_dietary_restriction(
-    restriction_id: int,
+    restriction_id: DbId,
     service: CatalogService = Depends(get_catalog_service),
     current_user: User = Depends(get_current_user),
 ):
@@ -143,7 +148,7 @@ async def get_dietary_restriction(
     response_model=list[DietaryRestrictionResponseSchema],
 )
 async def get_product_restrictions(
-    product_id: int,
+    product_id: DbId,
     service: CatalogService = Depends(get_catalog_service),
     current_user: User = Depends(get_current_user),
 ):

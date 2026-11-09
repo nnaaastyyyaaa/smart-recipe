@@ -25,3 +25,7 @@ class SessionRepository(ABC):
         except_token_hash: str | None = None,
     ) -> None:
         pass
+
+    @abstractmethod
+    async def delete_expired(self) -> None:
+        pass

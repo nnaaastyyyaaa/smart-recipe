@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.application.dto.catalog_dto import ProductResponseSchema
+from app.application.dto.catalog_dto import CategoryResponseSchema, ProductResponseSchema
 from app.application.dto.generation_dto import (
     GenerationRecipeRequest,
     GenerationRestrictionsRequest,
@@ -29,6 +29,7 @@ from app.application.exceptions import (
     SuggestionsPageNotFoundError,
 )
 from app.application.generation_service import GenerationService
+from app.core.config import MAX_DB_ID
 from app.domain.entities.user import User
 from app.infrastructure.ai.rate_limiter import AIRateLimitExceededError
 from app.presentation.api.dependencies import (
@@ -40,6 +41,7 @@ from app.presentation.api.dependencies import (
 router = APIRouter(prefix="/generations", tags=["generations"])
 
 
+# exception -> (HTTP-статус, код помилки для фронтенду, повідомлення)
 _FLOW_ERRORS: dict[type[Exception], tuple[int, str, str]] = {
     GenerationNotFoundError: (
         status.HTTP_404_NOT_FOUND,
@@ -84,7 +86,7 @@ _FLOW_ERRORS: dict[type[Exception], tuple[int, str, str]] = {
     NoSuitableRecipesError: (
         status.HTTP_422_UNPROCESSABLE_ENTITY,
         "NO_SUITABLE_RECIPES",
-        "Не вдалося знайти відповідні рецепти.",
+        "За обраними інгредієнтами та дієтичними обмеженнями рецептів не знайдено.",
     ),
     SuggestionNotFoundError: (
         status.HTTP_404_NOT_FOUND,
@@ -233,15 +235,34 @@ async def set_generation_restrictions(
 # ---------------------------------------------------------------------
 
 @router.get(
+    "/{generation_id}/categories",
+    response_model=list[CategoryResponseSchema],
+)
+async def get_generation_categories(
+    generation_id: UUID,
+    service: GenerationService = Depends(get_generation_service),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        return await service.get_available_categories(
+            current_user.id,
+            generation_id,
+        )
+
+    except HANDLED_ERRORS as exc:
+        handle_generation_error(exc)
+
+
+@router.get(
     "/{generation_id}/products",
     response_model=list[ProductResponseSchema],
 )
 async def get_generation_products(
     generation_id: UUID,
-    category_id: int | None = Query(default=None, gt=0),
+    category_id: int | None = Query(default=None, gt=0, le=MAX_DB_ID),
     search: str | None = Query(default=None, min_length=1, max_length=60),
     limit: int = Query(default=50, ge=1, le=200),
-    offset: int = Query(default=0, ge=0),
+    offset: int = Query(default=0, ge=0, le=MAX_DB_ID),
     service: GenerationService = Depends(get_generation_service),
     current_user: User = Depends(get_current_user),
 ):

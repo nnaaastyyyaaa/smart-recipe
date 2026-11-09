@@ -1,0 +1,808 @@
+{
+  "info": {
+    "name": "SmartRecipe API",
+    "description": "Потік створення рецепта: Start generation -> Set restrictions -> Get categories/products -> Generate suggestions -> (Get suggestions page) -> Generate full recipe -> Save recipe.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "generationId",
+      "value": ""
+    },
+    {
+      "key": "suggestionId",
+      "value": "0"
+    },
+    {
+      "key": "recipeId",
+      "value": ""
+    },
+    {
+      "key": "lastRecipe",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Passw0rd!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Passw0rd!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Change password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me",
+                "password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"Passw0rd!\",\n  \"new_password\": \"NewPassw0rd!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete me",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Category by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dietary restrictions (для кроку вибору обмежень)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dietary-restrictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dietary-restrictions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dietary restriction by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dietary-restrictions/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dietary-restrictions",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Products (весь каталог)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?limit=50&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "мол",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": false
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Product by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Product restrictions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/1/restrictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1",
+                "restrictions"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Generation",
+      "item": [
+        {
+          "name": "1. Start generation (кнопка «Почати генерацію»)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations"
+              ]
+            },
+            "description": "Створює нову сесію генерації. Попередня активна сесія користувача скасовується."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 Created\", () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"generationId\", body.id);",
+                  "pm.test(\"status = awaiting_restrictions\", () => pm.expect(body.status).to.eql(\"awaiting_restrictions\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Get generation state",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}"
+              ]
+            },
+            "description": "Поточний крок, обрані обмеження, кількість варіантів. Корисно для відновлення стану після перезавантаження сторінки."
+          }
+        },
+        {
+          "name": "3a. Set restrictions - обрано",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/restrictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "restrictions"
+              ]
+            },
+            "description": "Крок 1. Можна викликати повторно - продукти й варіанти рецептів при цьому скидаються.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restriction_ids\": [\n    1,\n    2\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3b. Set restrictions - обмежень немає",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/restrictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "restrictions"
+              ]
+            },
+            "description": "Порожній список = обмежень немає. Це обов'язковий крок, його не можна пропустити.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restriction_ids\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4a. Get available categories (з урахуванням обмежень)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "categories"
+              ]
+            },
+            "description": "Лише категорії, де є хоча б один продукт, дозволений обраними обмеженнями. До вибору обмежень повертає 409."
+          }
+        },
+        {
+          "name": "4. Get available products (з урахуванням обмежень)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/products?limit=50&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "мол",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": false
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Повертає лише продукти, що підходять під обрані обмеження. До вибору обмежень повертає 409."
+          }
+        },
+        {
+          "name": "5. Generate suggestions (до 16 варіантів)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/suggestions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "suggestions"
+              ]
+            },
+            "description": "Повертає першу сторінку (до 8). Решта - через 6. Get suggestions page.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_ids\": [\n    1,\n    2,\n    3\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"не більше 8 на сторінці\", () => pm.expect(body.items.length).to.be.at.most(8));",
+                  "pm.test(\"всього не більше 16\", () => pm.expect(body.total).to.be.at.most(16));",
+                  "if (body.items.length) { pm.collectionVariables.set(\"suggestionId\", body.items[0].id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Get suggestions page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/suggestions?page=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "suggestions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Пагінація: page починається з 1, розмір сторінки 8. Неіснуюча сторінка - 404."
+          }
+        },
+        {
+          "name": "7. Generate full recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/generations/{{generationId}}/recipe",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "generations",
+                "{{generationId}}",
+                "recipe"
+              ]
+            },
+            "description": "suggestion_id - поле id з елементів сторінки варіантів.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"suggestion_id\": {{suggestionId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set(\"lastRecipe\", JSON.stringify(pm.response.json()));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Покроковий процес створення рецепта. Усі запити - лише для авторизованого користувача."
+    },
+    {
+      "name": "Saved recipes (Кулінарна книга)",
+      "item": [
+        {
+          "name": "Save recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/saved",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "saved"
+              ]
+            },
+            "description": "Тіло береться зі змінної lastRecipe, яку заповнює запит 7. Generate full recipe.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{lastRecipe}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 Created\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"recipeId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List saved recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/saved?limit=12&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "saved"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "12",
+                  "disabled": false
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Пагінація по 12: limit=12&offset=0, 12, 24... Загальна кількість - у заголовку відповіді X-Total-Count. Без limit повертається весь список."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"є X-Total-Count\", () => pm.expect(pm.response.headers.get(\"X-Total-Count\")).to.not.be.null);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get saved recipe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/saved/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "saved",
+                "{{recipeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete saved recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/saved/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "saved",
+                "{{recipeId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

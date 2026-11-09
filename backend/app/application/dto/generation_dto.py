@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.core.config import MAX_DB_ID
 from app.application.dto.catalog_dto import DietaryRestrictionResponseSchema
 from app.application.dto.recipe_dto import RecipeSuggestionSchema
 from app.domain.entities.generation_session import GenerationStatus
@@ -24,7 +25,7 @@ class GenerationRestrictionsRequest(BaseModel):
     @field_validator("restriction_ids")
     @classmethod
     def validate_restriction_ids(cls, value: list[int]) -> list[int]:
-        if any(restriction_id <= 0 for restriction_id in value):
+        if any(not 0 < restriction_id <= MAX_DB_ID for restriction_id in value):
             raise ValueError("ID обмежень повинні бути додатними.")
 
         if len(value) != len(set(value)):
@@ -43,7 +44,7 @@ class GenerationSuggestionsRequest(BaseModel):
     @field_validator("product_ids")
     @classmethod
     def validate_product_ids(cls, value: list[int]) -> list[int]:
-        if any(product_id <= 0 for product_id in value):
+        if any(not 0 < product_id <= MAX_DB_ID for product_id in value):
             raise ValueError("ID продуктів повинні бути додатними.")
 
         if len(value) != len(set(value)):

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import delete
@@ -55,3 +56,10 @@ class SqlAlchemySessionRepository(SessionRepository):
             )
 
         await self.db.execute(statement)
+
+    async def delete_expired(self) -> None:
+        await self.db.execute(
+            delete(SessionModel).where(
+                SessionModel.expires_at <= datetime.now(timezone.utc)
+            )
+        )

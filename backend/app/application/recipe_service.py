@@ -46,8 +46,20 @@ class RecipeService:
 
         return saved_recipe
 
-    async def get_saved_recipes(self, user_id: UUID) -> list[Recipe]:
-        return await self.saved_recipes.get_all_by_user_id(user_id)
+    async def get_saved_recipes(
+        self,
+        user_id: UUID,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[Recipe]:
+        return await self.saved_recipes.get_all_by_user_id(
+            user_id,
+            limit=limit,
+            offset=offset,
+        )
+
+    async def count_saved_recipes(self, user_id: UUID) -> int:
+        return await self.saved_recipes.count_by_user_id(user_id)
 
     async def get_saved_recipe(
         self,

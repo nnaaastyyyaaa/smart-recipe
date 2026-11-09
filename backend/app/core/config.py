@@ -37,3 +37,10 @@ MAX_RECIPE_SUGGESTIONS = 16
 
 # Скільки варіантів рецептів повертається на одній сторінці.
 SUGGESTIONS_PAGE_SIZE = 8
+
+# Максимальне значення INTEGER-ідентифікатора в PostgreSQL (int32).
+MAX_DB_ID = 2_147_483_647
+
+# JWT: токен авторизації.
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_ALGORITHM = "HS256"

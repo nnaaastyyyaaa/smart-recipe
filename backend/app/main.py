@@ -9,6 +9,7 @@ from app.core.config import (
     GEMINI_API_KEY,
     GEMINI_MODEL,
     GEMINI_APP_RPM_LIMIT,
+    JWT_SECRET,
 )
 from app.infrastructure.database.database import wait_for_database
 from app.infrastructure.ai.rate_limiter import InMemoryGeminiRateLimiter
@@ -34,6 +35,9 @@ async def lifespan(app: FastAPI):
 
     if not GEMINI_MODEL:
         raise RuntimeError("GEMINI_MODEL is not set.")
+
+    if not JWT_SECRET or len(JWT_SECRET) < 32:
+        raise RuntimeError("JWT_SECRET is not set or shorter than 32 characters.")
 
     rate_limiter = InMemoryGeminiRateLimiter(
         requests_per_minute=GEMINI_APP_RPM_LIMIT,
@@ -67,6 +71,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Total-Count"],
 )
 
 app.include_router(api_router)

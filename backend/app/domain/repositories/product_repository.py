@@ -33,3 +33,10 @@ class ProductRepository(ABC):
         product_id: int,
     ) -> list[DietaryRestriction]:
         pass
+
+    @abstractmethod
+    async def get_category_ids(
+        self,
+        exclude_restriction_ids: list[int] | None = None,
+    ) -> list[int]:
+        pass

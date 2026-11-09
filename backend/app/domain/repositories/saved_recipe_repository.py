@@ -14,7 +14,13 @@ class SavedRecipeRepository(ABC):
     async def get_all_by_user_id(
         self,
         user_id: UUID,
+        limit: int | None = None,
+        offset: int = 0,
     ) -> list[Recipe]:
+        pass
+
+    @abstractmethod
+    async def count_by_user_id(self, user_id: UUID) -> int:
         pass
 
     @abstractmethod

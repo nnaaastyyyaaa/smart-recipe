@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from app.application.auth_service import AuthService
 from app.core.config import SESSION_COOKIE_NAME, SESSION_COOKIE_SECURE
 from app.domain.entities.user import User
-from app.domain.exceptions import EmailAlreadyExistsError, InvalidCredentialsError
+from app.domain.exceptions import (
+    EmailAlreadyExistsError,
+    InvalidCredentialsError,
+    InvalidUserNameError,
+)
 from app.presentation.api.dependencies import get_auth_service, get_current_user
 from app.presentation.schemas.auth import (
     UserLoginSchema,
@@ -49,6 +53,8 @@ async def register(
         user = await service.register(data.name, data.email, data.password)
     except EmailAlreadyExistsError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+    except InvalidUserNameError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
     _set_session_cookie(response, await service.create_session(user))
     return user

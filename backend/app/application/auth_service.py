@@ -3,9 +3,12 @@ from datetime import datetime, timedelta, timezone
 from app.core.config import SESSION_TTL_MINUTES
 from app.core.security import (
     DUMMY_PASSWORD_HASH,
+    create_access_token,
+    decode_access_token,
     generate_session_token,
     hash_password,
     hash_session_token,
+    session_hash_from_token,
     verify_password,
 )
 from app.domain.entities.session import Session
@@ -52,23 +55,31 @@ class AuthService:
         return user
 
     async def create_session(self, user: User) -> str:
-        token = generate_session_token()
+        await self.sessions.delete_expired()
+
+        session_id = generate_session_token()
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=SESSION_TTL_MINUTES)
 
         await self.sessions.save(
             Session(
-                token_hash=hash_session_token(token),
+                token_hash=hash_session_token(session_id),
                 user_id=user.id,
-                expires_at=datetime.now(timezone.utc)
-                + timedelta(minutes=SESSION_TTL_MINUTES),
+                expires_at=expires_at,
             )
         )
-        return token
+
+        return create_access_token(user.id, session_id, expires_at)
 
     async def get_user_by_session(self, token: str) -> User | None:
-        token_hash = hash_session_token(token)
+        claims = decode_access_token(token)
+
+        if claims is None:
+            return None
+
+        token_hash = hash_session_token(claims["jti"])
         session = await self.sessions.get_by_token_hash(token_hash)
 
-        if session is None:
+        if session is None or str(session.user_id) != claims["sub"]:
             return None
 
         if session.is_expired():
@@ -78,4 +89,7 @@ class AuthService:
         return await self.users.get_by_id(session.user_id)
 
     async def logout(self, token: str) -> None:
-        await self.sessions.delete_by_token_hash(hash_session_token(token))
+        token_hash = session_hash_from_token(token)
+
+        if token_hash is not None:
+            await self.sessions.delete_by_token_hash(token_hash)

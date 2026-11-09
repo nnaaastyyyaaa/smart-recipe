@@ -107,6 +107,21 @@ class SQLAlchemyProductRepository(ProductRepository):
             for model in models
         ]
 
+    async def get_category_ids(
+        self,
+        exclude_restriction_ids: list[int] | None = None,
+    ) -> list[int]:
+        statement = select(ProductModel.category_id).distinct()
+
+        if exclude_restriction_ids:
+            statement = statement.where(
+                self._allowed_condition(exclude_restriction_ids)
+            )
+
+        result = await self.db.execute(statement)
+
+        return list(result.scalars().all())
+
     @staticmethod
     def _allowed_condition(restriction_ids: list[int]):
         return ~ProductModel.restrictions.any(

@@ -1,8 +1,10 @@
 from uuid import UUID
 from sqlalchemy import delete, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.user import User
+from app.domain.exceptions import EmailAlreadyExistsError
 from app.domain.repositories.user_repository import UserRepository
 from app.infrastructure.database.models.user_model import UserModel
 
@@ -47,8 +49,11 @@ class SqlAlchemyUserRepository(UserRepository):
             user_model.email = user.email
             user_model.password_hash = user.password_hash
             user_model.name = user.name
-        
-        await self.db.flush()
+
+        try:
+            await self.db.flush()
+        except IntegrityError as exc:
+            raise EmailAlreadyExistsError() from exc
 
     async def delete(self, user_id: UUID) -> None:
         await self.db.execute(
