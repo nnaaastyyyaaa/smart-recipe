@@ -15,7 +15,11 @@
   font-size: 44px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-green), var(--color-primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--color-green),
+    var(--color-primary-dark)
+  );
   border-radius: 50%;
   box-shadow: 0 6px 16px rgba(58, 138, 38, 0.3);
 }
