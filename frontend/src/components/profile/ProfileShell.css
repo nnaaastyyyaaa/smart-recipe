@@ -1,0 +1,19 @@
+.profile {
+  max-width: 884px;
+  margin: 0 auto;
+}
+
+.profile__title {
+  margin: 0 0 10px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-heading);
+}
+
+@media (max-width: 640px) {
+  .profile__title {
+    margin-bottom: 12px;
+    font-size: 22px;
+    text-align: center;
+  }
+}

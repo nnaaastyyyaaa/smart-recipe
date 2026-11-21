@@ -1,0 +1,45 @@
+.layout {
+  --color-green: #54af3a;
+  --color-primary: #3a8a26;
+  --color-primary-dark: #2d6f1e;
+  --color-brown: #6b4226;
+  --color-orange: #ec6930;
+  --color-text: #2b2b2b;
+  --color-heading: #2b2b2b;
+  --color-muted: #707070;
+  --color-bg: #faf6ef;
+  --color-surface: #ffffff;
+  --color-border: #e6dccb;
+  --color-border-strong: #cdbca3;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdeceb;
+  --color-success: #1f6f35;
+  --color-success-bg: #e8f5ec;
+  --radius: 4px;
+
+  font-family: 'Nunito Variable', system-ui, sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.layout__main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px 20px;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    font-size: 14px;
+  }
+
+  .layout__main {
+    padding: 16px 24px 32px;
+  }
+}
