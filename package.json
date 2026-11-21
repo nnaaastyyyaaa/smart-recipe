@@ -18,6 +18,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:backend": "docker compose up --build db backend",
     "db:migrate": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini upgrade head",
-    "db:revision": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini revision --autogenerate"
+    "db:revision": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini revision --autogenerate",
+    "test:backend": "docker compose exec backend pytest",
+    "test:backend:cov": "docker compose exec backend pytest --cov=app --cov-report=term-missing --cov-report=html:reports/htmlcov"
   }
 }

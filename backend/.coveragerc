@@ -1,0 +1,15 @@
+[run]
+source = app
+branch = True
+concurrency = greenlet,thread
+omit =
+    */alembic/*
+    */tests/*
+
+[report]
+show_missing = True
+skip_covered = False
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    @abstractmethod
