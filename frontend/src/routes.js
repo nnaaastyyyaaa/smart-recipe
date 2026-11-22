@@ -1,7 +1,10 @@
 export const ROUTES = {
   home: '/',
   login: '/login',
+  register: '/register',
   profile: '/profile',
   favorites: '/profile/favorites',
   favoriteRecipe: (recipeId) => `/profile/favorites/${recipeId}`,
+  generationRestrictions: (generationId) =>
+    `/generate/${generationId}/restrictions`,
 };

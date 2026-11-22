@@ -1,0 +1,397 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding-top: 20px;
+}
+
+/* ---------- Перший екран ---------- */
+
+.home__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  gap: 48px;
+  align-items: center;
+}
+
+.home__greeting {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.home__title {
+  max-width: 16ch;
+  margin: 0 0 18px;
+  font-size: 50px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-brown);
+}
+
+.home__lead {
+  max-width: 46ch;
+  margin: 0 0 28px;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.home__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 30px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.home__button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.home__button--ghost {
+  color: var(--color-brown);
+  background: transparent;
+  border-color: var(--color-border-strong);
+}
+
+.home__button--ghost:hover:not(:disabled) {
+  color: var(--color-brown);
+  background: var(--color-surface);
+  border-color: var(--color-brown);
+}
+
+.home__button:focus-visible {
+  outline: 3px solid var(--color-green);
+  outline-offset: 3px;
+}
+
+.home__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.home__status {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.home__alert {
+  max-width: 420px;
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-radius: 10px;
+}
+
+/* ---------- Ілюстрація: холодильник і рецепт ---------- */
+
+.fridge {
+  position: relative;
+  padding-bottom: 72px;
+}
+
+.fridge__door {
+  position: relative;
+  min-height: 250px;
+  padding: 36px 32px 36px 48px;
+  background: linear-gradient(160deg, #ffffff 0%, #f1ece3 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 -6px 0 rgba(107, 66, 38, 0.05),
+    0 24px 40px -28px rgba(107, 66, 38, 0.45);
+}
+
+.fridge__handle {
+  position: absolute;
+  top: 40px;
+  left: 18px;
+  width: 8px;
+  height: 120px;
+  background: var(--color-border-strong);
+  border-radius: 999px;
+}
+
+.fridge__magnets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fridge__magnet {
+  padding: 9px 16px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 14px;
+  box-shadow: 0 3px 0 rgba(43, 43, 43, 0.12);
+  transform: rotate(var(--tilt));
+  animation: magnet-stick 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--order) * 90ms + 150ms);
+}
+
+.fridge__magnet--green {
+  color: var(--color-success);
+  background: #dff0d8;
+}
+
+.fridge__magnet--orange {
+  color: #a8441a;
+  background: #fde3d5;
+}
+
+.fridge__magnet--brown {
+  color: var(--color-brown);
+  background: #efe3d4;
+}
+
+.fridge__recipe {
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 270px;
+  padding: 18px 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: 5px solid var(--color-orange);
+  border-radius: 18px;
+  box-shadow: 0 22px 40px -22px rgba(43, 43, 43, 0.4);
+  transform: rotate(2deg);
+  animation: recipe-arrive 0.5s ease-out both;
+  animation-delay: 0.85s;
+}
+
+.fridge__recipe-title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--color-heading);
+}
+
+.fridge__recipe-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.fridge__recipe-steps {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+@keyframes magnet-stick {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.85) rotate(0deg);
+  }
+}
+
+@keyframes recipe-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fridge__magnet,
+  .fridge__recipe {
+    animation: none;
+  }
+}
+
+/* ---------- Як це працює ---------- */
+
+.home__heading {
+  margin: 0 0 24px;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--color-brown);
+}
+
+.home__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home__step {
+  position: relative;
+}
+
+/* Пунктир між кроками, як у рецепті. */
+.home__step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 21px;
+  left: 56px;
+  right: -20px;
+  border-top: 2px dashed var(--color-border-strong);
+}
+
+.home__step-number {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 14px;
+  font-size: 19px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.home__step:last-child .home__step-number {
+  background: var(--color-orange);
+}
+
+.home__step-title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-heading);
+}
+
+.home__step-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* ---------- Адаптивність ---------- */
+
+@media (max-width: 900px) {
+  .home__hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .fridge {
+    max-width: 440px;
+  }
+
+  .fridge__recipe {
+    right: 0;
+  }
+
+  .home__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
+  }
+
+  .home__step:nth-child(2)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .home {
+    gap: 40px;
+    padding-top: 4px;
+  }
+
+  .home__title {
+    font-size: 34px;
+  }
+
+  .home__lead {
+    font-size: 16px;
+  }
+
+  .home__button {
+    flex: 1;
+    padding: 12px 20px;
+  }
+
+  .fridge__door {
+    min-height: 0;
+    padding: 24px 20px 44px 40px;
+    border-radius: 22px;
+  }
+
+  .fridge__handle {
+    left: 14px;
+    height: 90px;
+  }
+
+  .fridge__magnet {
+    padding: 7px 12px;
+    font-size: 14px;
+  }
+
+  .fridge__recipe {
+    position: relative;
+    width: auto;
+    margin: -24px 12px 0 32px;
+  }
+
+  .fridge {
+    padding-bottom: 0;
+  }
+
+  .home__steps {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* На телефоні кроки йдуть стовпчиком, пунктир стає вертикальним. */
+  .home__step {
+    padding: 0 0 24px 60px;
+  }
+
+  .home__step-number {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+  }
+
+  .home__step:not(:last-child)::after,
+  .home__step:nth-child(2)::after {
+    display: block;
+    top: 50px;
+    bottom: 4px;
+    left: 21px;
+    right: auto;
+    border-top: none;
+    border-left: 2px dashed var(--color-border-strong);
+  }
+
+  .home__step-title {
+    padding-top: 10px;
+  }
+}
