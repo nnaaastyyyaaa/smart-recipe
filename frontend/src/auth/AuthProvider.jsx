@@ -25,7 +25,28 @@ export default function AuthProvider({ children }) {
     return () => controller.abort();
   }, [setSession]);
 
-  const value = useMemo(() => ({ user, status }), [user, status]);
+  const login = useCallback(
+    async (credentials) => {
+      const nextUser = await authApi.login(credentials);
+      setSession(nextUser);
+      return nextUser;
+    },
+    [setSession],
+  );
+
+  const register = useCallback(
+    async (data) => {
+      const nextUser = await authApi.register(data);
+      setSession(nextUser);
+      return nextUser;
+    },
+    [setSession],
+  );
+
+  const value = useMemo(
+    () => ({ user, status, login, register }),
+    [user, status, login, register],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
