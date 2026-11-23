@@ -79,12 +79,12 @@ _FLOW_ERRORS: dict[type[Exception], tuple[int, str, str]] = {
         "Один або декілька обраних продуктів не знайдені.",
     ),
     ProductsViolateRestrictionsError: (
-        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status.HTTP_422_UNPROCESSABLE_CONTENT,
         "PRODUCTS_VIOLATE_RESTRICTIONS",
         "Серед обраних продуктів є такі, що не підходять під обрані дієтичні обмеження.",
     ),
     NoSuitableRecipesError: (
-        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status.HTTP_422_UNPROCESSABLE_CONTENT,
         "NO_SUITABLE_RECIPES",
         "За обраними інгредієнтами та дієтичними обмеженнями рецептів не знайдено.",
     ),
