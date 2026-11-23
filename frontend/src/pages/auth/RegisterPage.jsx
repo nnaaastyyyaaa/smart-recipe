@@ -51,7 +51,6 @@ export default function RegisterPage() {
       });
       navigate(getRedirectPath(location), { replace: true });
     } catch (error) {
-      // 409: такий email уже зареєстровано — показуємо помилку біля поля.
       if (error.status === 409) {
         setFieldErrors({ email: error.message });
       } else {

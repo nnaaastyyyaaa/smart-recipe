@@ -5,6 +5,9 @@ import Layout from './components/Layout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
+import ProductsPage from './pages/generation/ProductsPage.jsx';
+import RestrictionsPage from './pages/generation/RestrictionsPage.jsx';
+import SuggestionsPage from './pages/generation/SuggestionsPage.jsx';
 import HomePage from './pages/home/HomePage.jsx';
 import FavoriteRecipePage from './pages/profile/FavoriteRecipePage.jsx';
 import FavoritesPage from './pages/profile/FavoritesPage.jsx';
@@ -29,6 +32,18 @@ export default function App() {
               <Route
                 path='/profile/favorites/:recipeId'
                 element={<FavoriteRecipePage />}
+              />
+              <Route
+                path='/generate/:generationId/restrictions'
+                element={<RestrictionsPage />}
+              />
+              <Route
+                path='/generate/:generationId/products'
+                element={<ProductsPage />}
+              />
+              <Route
+                path='/generate/:generationId/suggestions'
+                element={<SuggestionsPage />}
               />
             </Route>
           </Route>

@@ -7,4 +7,7 @@ export const ROUTES = {
   favoriteRecipe: (recipeId) => `/profile/favorites/${recipeId}`,
   generationRestrictions: (generationId) =>
     `/generate/${generationId}/restrictions`,
+  generationProducts: (generationId) => `/generate/${generationId}/products`,
+  generationSuggestions: (generationId) =>
+    `/generate/${generationId}/suggestions`,
 };

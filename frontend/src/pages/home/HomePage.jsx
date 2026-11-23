@@ -5,7 +5,6 @@ import { useStartGeneration } from '../../hooks/useStartGeneration.js';
 import { ROUTES } from '../../routes.js';
 import './HomePage.css';
 
-// Магнітики на дверцятах холодильника: продукт, колір і нахил.
 const FRIDGE_ITEMS = [
   { name: 'Яйця', tone: 'orange', tilt: -6 },
   { name: 'Шпинат', tone: 'green', tilt: 4 },
@@ -83,7 +82,6 @@ function HeroActions() {
   );
 }
 
-// Ілюстрація: продукти з холодильника і страва, яка з них вийшла.
 function FridgeIllustration() {
   return (
     <div className='fridge' aria-hidden='true'>
