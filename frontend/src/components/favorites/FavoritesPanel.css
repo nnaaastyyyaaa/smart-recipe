@@ -17,6 +17,20 @@
   opacity: 0.6;
 }
 
+.favorites__content {
+  position: relative;
+}
+
+.favorites__grid--hidden {
+  animation: favorites-hide 0s 0.3s forwards;
+}
+
+@keyframes favorites-hide {
+  to {
+    visibility: hidden;
+  }
+}
+
 .favorites__alert {
   margin: 0 0 14px;
   padding: 10px 12px;
@@ -30,6 +44,19 @@
   padding: 32px 0;
   text-align: center;
   color: var(--color-muted);
+}
+
+.favorites__status--overlay {
+  position: absolute;
+  inset: 0 0 auto;
+  visibility: hidden;
+  animation: favorites-show 0s 0.3s forwards;
+}
+
+@keyframes favorites-show {
+  to {
+    visibility: visible;
+  }
 }
 
 .favorites__status--error {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { deleteSavedRecipe, getSavedRecipes } from '../../api/recipes.js';
 import Pagination from '../common/Pagination.jsx';
@@ -15,6 +15,7 @@ export default function FavoritesPanel() {
   const [loadError, setLoadError] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const shouldScrollToTop = useRef(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,6 +46,13 @@ export default function FavoritesPanel() {
     return () => controller.abort();
   }, [page, reloadKey, setSearchParams]);
 
+  useLayoutEffect(() => {
+    if (!shouldScrollToTop.current || result?.page !== page) return;
+
+    shouldScrollToTop.current = false;
+    window.scrollTo({ top: 0 });
+  }, [result, page]);
+
   async function handleDelete(recipe) {
     setDeleteError('');
 
@@ -59,8 +67,8 @@ export default function FavoritesPanel() {
   }
 
   function handlePageChange(nextPage) {
+    shouldScrollToTop.current = true;
     setSearchParams(nextPage === 1 ? {} : { page: String(nextPage) });
-    window.scrollTo({ top: 0 });
   }
 
   function handleRetry() {
@@ -100,7 +108,15 @@ export default function FavoritesPanel() {
     );
   }
 
-  const isFetching = result.page !== page || result.reloadKey !== reloadKey;
+  const isChangingPage = result.page !== page;
+  const isReloading = !isChangingPage && result.reloadKey !== reloadKey;
+  const gridClassName = [
+    'favorites__grid',
+    isChangingPage && 'favorites__grid--hidden',
+    isReloading && 'favorites__grid--busy',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className='favorites'>
@@ -112,15 +128,24 @@ export default function FavoritesPanel() {
         </p>
       )}
 
-      <ul
-        className={`favorites__grid${isFetching ? ' favorites__grid--busy' : ''}`}
-      >
-        {result.items.map((recipe) => (
-          <li key={recipe.id}>
-            <FavoriteRecipeCard recipe={recipe} onDelete={handleDelete} />
-          </li>
-        ))}
-      </ul>
+      <div className='favorites__content'>
+        <ul className={gridClassName}>
+          {result.items.map((recipe) => (
+            <li key={recipe.id}>
+              <FavoriteRecipeCard recipe={recipe} onDelete={handleDelete} />
+            </li>
+          ))}
+        </ul>
+
+        {isChangingPage && (
+          <p
+            className='favorites__status favorites__status--overlay'
+            role='status'
+          >
+            Завантаження…
+          </p>
+        )}
+      </div>
 
       <Pagination
         page={page}
