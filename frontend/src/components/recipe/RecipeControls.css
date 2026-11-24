@@ -114,9 +114,33 @@
   border-radius: 12px;
 }
 
-.recipe-notice--success {
-  color: var(--color-success);
+.recipe-favorite {
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.recipe-favorite:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.recipe-favorite--saved {
+  color: var(--color-primary-dark);
   background: var(--color-success-bg);
+  border-color: var(--color-primary);
+}
+
+.recipe-favorite--saved svg {
+  color: var(--color-orange);
+}
+
+.recipe-favorite--saved:hover:not(:disabled) {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+}
+
+.recipe-favorite--saved:hover:not(:disabled) svg {
+  color: var(--color-danger);
 }
 
 .recipe-notice--error {

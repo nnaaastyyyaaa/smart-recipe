@@ -5,6 +5,7 @@ import Layout from './components/Layout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
+import GeneratedRecipePage from './pages/generation/GeneratedRecipePage.jsx';
 import ProductsPage from './pages/generation/ProductsPage.jsx';
 import RestrictionsPage from './pages/generation/RestrictionsPage.jsx';
 import SuggestionsPage from './pages/generation/SuggestionsPage.jsx';
@@ -45,6 +46,10 @@ export default function App() {
               <Route
                 path='/generate/:generationId/suggestions'
                 element={<SuggestionsPage />}
+              />
+              <Route
+                path='/generate/:generationId/recipe/:suggestionId'
+                element={<GeneratedRecipePage />}
               />
             </Route>
 

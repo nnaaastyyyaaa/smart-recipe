@@ -10,4 +10,6 @@ export const ROUTES = {
   generationProducts: (generationId) => `/generate/${generationId}/products`,
   generationSuggestions: (generationId) =>
     `/generate/${generationId}/suggestions`,
+  generationRecipe: (generationId, suggestionId) =>
+    `/generate/${generationId}/recipe/${suggestionId}`,
 };
