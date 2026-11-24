@@ -6,7 +6,7 @@ import { ROUTES } from '../../routes.js';
 import './Header.css';
 
 export default function Header() {
-  const { status } = useAuth();
+  const { status, user } = useAuth();
   const { pathname } = useLocation();
 
   const showProfileLink =
@@ -28,8 +28,13 @@ export default function Header() {
 
         {showProfileLink && (
           <nav className='header__nav'>
-            <Link className='header__link' to={ROUTES.profile}>
-              Профіль
+            <Link
+              className='header__avatar'
+              to={ROUTES.profile}
+              aria-label='Профіль'
+              title='Профіль'
+            >
+              {user.name.trim().charAt(0).toUpperCase()}
             </Link>
           </nav>
         )}
