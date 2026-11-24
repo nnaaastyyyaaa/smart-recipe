@@ -35,3 +35,17 @@ export function suggestRecipes(generationId, productIds) {
     body: { product_ids: productIds },
   });
 }
+
+export function generateRecipe(generationId, suggestionId) {
+  return apiFetch(`/generations/${generationId}/recipe`, {
+    method: 'POST',
+    body: { suggestion_id: suggestionId },
+  });
+}
+
+export function getSuggestionsPage(generationId, page, { signal } = {}) {
+  return apiFetch(`/generations/${generationId}/suggestions`, {
+    query: { page },
+    signal,
+  });
+}
