@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FaRegClock } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes.js';
 import { formatCookingTime } from '../../utils/formatCookingTime.js';
+import DetailsLink from '../common/DetailsLink.jsx';
 import './FavoriteRecipeCard.css';
 
 export default function FavoriteRecipeCard({ recipe, onDelete }) {
@@ -27,12 +27,10 @@ export default function FavoriteRecipeCard({ recipe, onDelete }) {
 
       {step === 'idle' ? (
         <div className='recipe-card__actions'>
-          <Link
-            className='recipe-card__link'
+          <DetailsLink
             to={ROUTES.favoriteRecipe(recipe.id)}
-          >
-            Детальніше
-          </Link>
+            title={recipe.title}
+          />
 
           <button
             className='recipe-card__delete'
