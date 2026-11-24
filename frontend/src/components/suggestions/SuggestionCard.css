@@ -1,0 +1,49 @@
+.suggestion-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 18px 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.suggestion-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--color-heading);
+  overflow-wrap: anywhere;
+}
+
+.suggestion-card__description {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.suggestion-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.suggestion-card__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-success-bg);
+  border-radius: 999px;
+}
