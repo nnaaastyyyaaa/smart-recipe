@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth.js';
-import { ROUTES } from '../../routes.js';
 import './LogoutButton.css';
 
 export default function LogoutButton() {
   const { logout } = useAuth();
-  const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState('');
 
@@ -17,7 +14,6 @@ export default function LogoutButton() {
 
     try {
       await logout();
-      navigate(ROUTES.home, { replace: true });
     } catch (logoutError) {
       setError(logoutError.message);
       setIsLoggingOut(false);

@@ -1,10 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as authApi from '../api/auth.js';
+import { ROUTES } from '../routes.js';
 import { AuthContext } from './AuthContext.js';
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState('loading');
+  const navigate = useNavigate();
 
   const setSession = useCallback((nextUser) => {
     setUser(nextUser);
@@ -45,8 +54,12 @@ export default function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     await authApi.logout();
-    setSession(null);
-  }, [setSession]);
+
+    startTransition(() => {
+      setSession(null);
+      navigate(ROUTES.home, { replace: true });
+    });
+  }, [setSession, navigate]);
 
   const value = useMemo(
     () => ({ user, status, login, register, logout }),
