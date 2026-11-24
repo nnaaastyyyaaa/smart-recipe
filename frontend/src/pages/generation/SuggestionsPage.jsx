@@ -15,6 +15,10 @@ const NOT_FOUND_MESSAGE =
 export default function SuggestionsPage() {
   const { generationId } = useParams();
 
+  return <SuggestionsView key={generationId} generationId={generationId} />;
+}
+
+function SuggestionsView({ generationId }) {
   const [suggestions, setSuggestions] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -22,6 +26,7 @@ export default function SuggestionsPage() {
   const [moreError, setMoreError] = useState('');
   const [focusId, setFocusId] = useState(null);
   const focusRef = useRef(null);
+  const moreControllerRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,6 +45,8 @@ export default function SuggestionsPage() {
     focusRef.current?.focus();
   }, [focusId]);
 
+  useEffect(() => () => moreControllerRef.current?.abort(), []);
+
   function handleRetry() {
     setLoadError(null);
     setSuggestions(null);
@@ -47,17 +54,24 @@ export default function SuggestionsPage() {
   }
 
   async function handleShowMore() {
+    const controller = new AbortController();
+    moreControllerRef.current = controller;
     setIsLoadingMore(true);
     setMoreError('');
 
     try {
-      const next = await getSuggestionsPage(generationId, suggestions.page + 1);
+      const next = await getSuggestionsPage(
+        generationId,
+        suggestions.page + 1,
+        { signal: controller.signal },
+      );
       setSuggestions((current) => ({
         ...next,
         items: [...current.items, ...next.items],
       }));
       setFocusId(next.items[0]?.id ?? null);
     } catch (error) {
+      if (error.name === 'AbortError') return;
       setMoreError(error.message);
     } finally {
       setIsLoadingMore(false);
