@@ -28,7 +28,7 @@
 
 @media (min-width: 900px) {
   .profile__grid {
-    grid-template-columns: 300px minmax(0, 560px);
+    grid-template-columns: 300px minmax(0, 1fr);
   }
 }
 
