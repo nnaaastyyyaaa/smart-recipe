@@ -9,6 +9,7 @@ import ProductsPage from './pages/generation/ProductsPage.jsx';
 import RestrictionsPage from './pages/generation/RestrictionsPage.jsx';
 import SuggestionsPage from './pages/generation/SuggestionsPage.jsx';
 import HomePage from './pages/home/HomePage.jsx';
+import NotFoundPage from './pages/not-found/NotFoundPage.jsx';
 import FavoriteRecipePage from './pages/profile/FavoriteRecipePage.jsx';
 import FavoritesPage from './pages/profile/FavoritesPage.jsx';
 import ProfilePage from './pages/profile/ProfilePage.jsx';
@@ -46,6 +47,8 @@ export default function App() {
                 element={<SuggestionsPage />}
               />
             </Route>
+
+            <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Routes>
       </AuthProvider>
