@@ -1,8 +1,12 @@
 import { FaRegClock } from 'react-icons/fa';
 import { formatCookingTime } from '../../utils/formatCookingTime.js';
+import { splitIngredients, splitSteps } from '../../utils/recipeText.js';
 import './RecipeDetails.css';
 
 export default function RecipeDetails({ recipe, actions }) {
+  const ingredients = splitIngredients(recipe.ingredients);
+  const steps = splitSteps(recipe.instructions);
+
   return (
     <article className='recipe'>
       <header className='recipe__header'>
@@ -17,7 +21,11 @@ export default function RecipeDetails({ recipe, actions }) {
       <div className='recipe__body'>
         <section className='recipe__section'>
           <h2 className='recipe__heading'>Інгредієнти</h2>
-          <p className='recipe__text'>{recipe.ingredients}</p>
+          <ol className='recipe__list'>
+            {ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ol>
         </section>
 
         <section className='recipe__section recipe__section--scrollable'>
@@ -30,7 +38,15 @@ export default function RecipeDetails({ recipe, actions }) {
             aria-labelledby='recipe-instructions-heading'
             tabIndex={0}
           >
-            <p className='recipe__text'>{recipe.instructions}</p>
+            {steps.length > 1 ? (
+              <ol className='recipe__list recipe__list--steps'>
+                {steps.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
+              </ol>
+            ) : (
+              <p className='recipe__text'>{steps[0]}</p>
+            )}
           </div>
         </section>
       </div>

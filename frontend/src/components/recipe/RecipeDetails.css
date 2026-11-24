@@ -91,6 +91,20 @@
   overflow-wrap: anywhere;
 }
 
+.recipe__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.6em;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.recipe__list--steps {
+  gap: 8px;
+}
+
 .recipe__actions {
   display: flex;
   flex-wrap: wrap;
