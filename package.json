@@ -20,6 +20,8 @@
     "db:migrate": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini upgrade head",
     "db:revision": "docker compose exec backend alembic -c app/infrastructure/database/alembic.ini revision --autogenerate",
     "test:backend": "docker compose exec backend pytest",
-    "test:backend:cov": "docker compose exec backend pytest --cov=app --cov-report=term-missing --cov-report=html:reports/htmlcov"
+    "test:backend:cov": "docker compose exec backend pytest --cov=app --cov-report=term-missing --cov-report=html:reports/htmlcov",
+    "test:frontend": "docker compose run --build --rm --no-deps frontend npm test",
+    "test:frontend:cov": "docker compose run --build --rm --no-deps frontend npm run test:coverage"
   }
 }
