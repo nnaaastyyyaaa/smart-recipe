@@ -1,4 +1,4 @@
- import './AuthForm.css';
+import './AuthForm.css';
 
 export default function AuthCard({ title, subtitle, children, footer }) {
   return (

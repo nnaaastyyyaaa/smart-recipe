@@ -99,6 +99,7 @@
   font: inherit;
   font-weight: 600;
   color: #fff;
+  text-decoration: none;
   background: var(--color-primary);
   border: none;
   border-radius: 10px;

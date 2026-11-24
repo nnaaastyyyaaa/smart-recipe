@@ -7,6 +7,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { getProduct } from '../../api/catalog.js';
 import {
   getGeneration,
   getGenerationCategories,
@@ -19,7 +20,7 @@ import { useDebouncedValue } from '../../hooks/useDebouncedValue.js';
 import { ROUTES } from '../../routes.js';
 import './ProductsPage.css';
 
-export const PAGE_SIZE = 24;
+export const PAGE_SIZE = 12;
 export const MIN_PRODUCTS = 2;
 export const MAX_PRODUCTS = 30;
 
@@ -53,8 +54,16 @@ export default function ProductsPage() {
       getGenerationCategories(generationId, { signal }),
     ])
       .then(([nextGeneration, nextCategories]) => {
-        setGeneration(nextGeneration);
         setCategories(nextCategories);
+
+        const productIds = nextGeneration.product_ids ?? [];
+        if (productIds.length === 0) return;
+
+        Promise.all(productIds.map((id) => getProduct(id, { signal })))
+          .then((products) =>
+            setSelected((current) => (current.length > 0 ? current : products)),
+          )
+          .catch(() => {});
       })
       .catch((error) => {
         if (error.name === 'AbortError') return;
@@ -311,7 +320,7 @@ export default function ProductsPage() {
 
           {selected.length === 0 ? (
             <p className='products__hint'>
-              Позначте продукти, які є у вас вдома. Потрібно щонайменше{' '}
+              Позначте продукти, які є у вас вдома.
               {MIN_PRODUCTS}.
             </p>
           ) : (
@@ -331,7 +340,11 @@ export default function ProductsPage() {
               ))}
             </ul>
           )}
-
+          {selected.length < MIN_PRODUCTS && (
+            <p className='products__hint' id='products-min-hint'>
+              Оберіть щонайменше {MIN_PRODUCTS} продукти, щоб підібрати рецепти.
+            </p>
+          )}
           {isLimitReached && (
             <p className='products__hint'>
               Обрано максимальну кількість продуктів.
@@ -348,7 +361,10 @@ export default function ProductsPage() {
             className='generation__button products__submit'
             type='button'
             onClick={handleSubmit}
-            disabled={selected.length < MIN_PRODUCTS || isSubmitting}
+                        disabled={selected.length < MIN_PRODUCTS || isSubmitting}
+            aria-describedby={
+              selected.length < MIN_PRODUCTS ? 'products-min-hint' : undefined
+            }
           >
             {isSubmitting ? 'Підбираємо рецепти…' : 'Підібрати рецепти'}
           </button>
