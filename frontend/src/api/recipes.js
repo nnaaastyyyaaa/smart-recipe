@@ -7,7 +7,7 @@ export async function getSavedRecipes({ limit, offset, signal } = {}) {
     withHeaders: true,
   });
 
-  const total = Number(headers.get('X-Total-Count'));
+  const total = Number.parseInt(headers.get('X-Total-Count'), 10);
 
   return { items: data, total: Number.isFinite(total) ? total : data.length };
 }
