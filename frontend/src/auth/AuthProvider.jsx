@@ -43,9 +43,14 @@ export default function AuthProvider({ children }) {
     [setSession],
   );
 
+  const logout = useCallback(async () => {
+    await authApi.logout();
+    setSession(null);
+  }, [setSession]);
+
   const value = useMemo(
-    () => ({ user, status, login, register }),
-    [user, status, login, register],
+    () => ({ user, status, login, register, logout }),
+    [user, status, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -17,3 +17,7 @@ export function register({ name, email, password }) {
     body: { name, email, password },
   });
 }
+
+export function logout() {
+  return apiFetch('/auth/logout', { method: 'POST' });
+}
