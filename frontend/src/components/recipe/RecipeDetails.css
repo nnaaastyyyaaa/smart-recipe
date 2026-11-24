@@ -1,0 +1,136 @@
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recipe__header {
+  padding: 24px 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.recipe__title {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--color-heading);
+  overflow-wrap: anywhere;
+}
+
+.recipe__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 5px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-success-bg);
+  border-radius: 999px;
+}
+
+.recipe__description {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.recipe__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.recipe__section {
+  padding: 22px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.recipe__section--scrollable {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  contain: size;
+}
+
+.recipe__scroll {
+  flex: 1;
+  min-height: 0;
+  padding-right: 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+  border-radius: 8px;
+}
+
+.recipe__scroll:focus-visible {
+  outline: 3px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.recipe__heading {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-brown);
+}
+
+.recipe__text {
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.recipe__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .recipe {
+    gap: 14px;
+  }
+
+  .recipe__header {
+    padding: 18px 16px;
+  }
+
+  .recipe__title {
+    font-size: 22px;
+  }
+
+  .recipe__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .recipe__section {
+    padding: 16px;
+  }
+
+  .recipe__section--scrollable {
+    contain: none;
+  }
+
+  .recipe__scroll {
+    padding-right: 0;
+    overflow-y: visible;
+  }
+
+  .recipe__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
