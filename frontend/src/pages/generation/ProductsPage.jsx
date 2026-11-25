@@ -54,6 +54,7 @@ export default function ProductsPage() {
       getGenerationCategories(generationId, { signal }),
     ])
       .then(([nextGeneration, nextCategories]) => {
+        setGeneration(nextGeneration);
         setCategories(nextCategories);
 
         const productIds = nextGeneration.product_ids ?? [];
@@ -321,7 +322,6 @@ export default function ProductsPage() {
           {selected.length === 0 ? (
             <p className='products__hint'>
               Позначте продукти, які є у вас вдома.
-              {MIN_PRODUCTS}.
             </p>
           ) : (
             <ul className='products__chips'>
@@ -340,11 +340,13 @@ export default function ProductsPage() {
               ))}
             </ul>
           )}
+
           {selected.length < MIN_PRODUCTS && (
             <p className='products__hint' id='products-min-hint'>
               Оберіть щонайменше {MIN_PRODUCTS} продукти, щоб підібрати рецепти.
             </p>
           )}
+
           {isLimitReached && (
             <p className='products__hint'>
               Обрано максимальну кількість продуктів.
@@ -361,7 +363,7 @@ export default function ProductsPage() {
             className='generation__button products__submit'
             type='button'
             onClick={handleSubmit}
-                        disabled={selected.length < MIN_PRODUCTS || isSubmitting}
+            disabled={selected.length < MIN_PRODUCTS || isSubmitting}
             aria-describedby={
               selected.length < MIN_PRODUCTS ? 'products-min-hint' : undefined
             }
