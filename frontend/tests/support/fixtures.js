@@ -59,3 +59,35 @@ export function makeGeneratedRecipe(suggestionId) {
     cooking_time: 45,
   };
 }
+
+export const RESTRICTIONS = [
+  { id: 1, name: 'Веганська' },
+  { id: 2, name: 'Без глютену' },
+  { id: 3, name: 'Без лактози' },
+];
+
+export const CATEGORIES = [
+  { id: 1, name: 'Овочі' },
+  { id: 2, name: 'Крупи' },
+];
+
+export function makeGeneration(overrides = {}) {
+  return {
+    id: 'g-1',
+    status: 'awaiting_products',
+    restrictions: [RESTRICTIONS[0]],
+    product_ids: [],
+    suggestions_total: 0,
+    ...overrides,
+  };
+}
+
+export function makeProduct(id) {
+  return { id, name: `Продукт ${id}`, category_id: 1 };
+}
+
+export function makeProducts(count, startId = 1) {
+  return Array.from({ length: count }, (_, index) =>
+    makeProduct(startId + index),
+  );
+}
